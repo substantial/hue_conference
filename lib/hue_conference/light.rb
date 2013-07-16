@@ -7,4 +7,12 @@ class HueConference::Light
     @name = properties['name']
   end
 
+  def turn_on
+    @client.put("/lights/#{id}/state", on: true)
+  end
+
+  def turn_off
+    @client.put("/lights/#{id}/state", on: false)
+  end
+
 end

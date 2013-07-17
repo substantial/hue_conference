@@ -21,6 +21,7 @@ end.first
 
 my_light.sync!
 
+require 'pry'; binding.pry
 loop do
   sleep(1)
   my_light.toggle

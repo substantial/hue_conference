@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'HueConference::Calendar' do
-  let(:mock_google_service) { m = mock
+  let(:mock_google_service) { m = double
                               m.stub(:is_a?) { true }
                               m
   }
@@ -19,3 +19,4 @@ describe 'HueConference::Calendar' do
     calendar.id.should == 'calendar_id'
   end
 end
+

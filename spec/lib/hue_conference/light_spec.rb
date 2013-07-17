@@ -18,13 +18,13 @@ describe "HueConference::Light" do
   end
 
   it "should take a client" do
-    mock_client = mock
+    mock_client = double
     @light.client = mock_client
     @light.client.should == mock_client
   end
 
   describe "turn on/off" do
-    let(:mock_client) { mock }
+    let(:mock_client) { double }
 
     before do
       @light.client = mock_client
@@ -44,7 +44,7 @@ describe "HueConference::Light" do
   end
 
   describe "#sync_state" do
-    let(:mock_client) { mock }
+    let(:mock_client) { double }
 
     let(:light_state) {
       {
@@ -62,7 +62,7 @@ describe "HueConference::Light" do
         }
       }
     }
-    let(:response) { mock_response = mock
+    let(:response) { mock_response = double
                      mock_response.stub(:data).and_return(light_state)
                      mock_response
     }

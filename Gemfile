@@ -4,3 +4,6 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'pry'
+gem 'guard'
+gem 'guard-rspec'
+gem 'rb-fsevent'

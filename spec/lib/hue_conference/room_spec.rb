@@ -9,13 +9,13 @@ describe "HueConference::Room" do
   end
 
   it "should have a light" do
-    light = mock
+    light = double
     room.lights << light
     room.lights.should include light
   end
 
   it "should be able to turn off lights" do
-    light = mock
+    light = double
     light.stub(:off)
     room.lights << light
     light.should_receive(:off)
@@ -23,7 +23,7 @@ describe "HueConference::Room" do
   end
 
   it "should be able to turn on lights" do
-    light = mock
+    light = double
     light.stub(:on)
     room.lights << light
     light.should_receive(:on)

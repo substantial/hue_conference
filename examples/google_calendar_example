@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+
+require 'google/api_client'
+
+client = Google::APIClient.new(application_name: 'HueCon')
+
+key = Google::APIClient::PKCS12.load_key('client.p12', 'notasecret')
+
+email = '444643631838-fv16bph1k6sudkvhkjkti702k5pcd925@developer.gserviceaccount.com'
+
+scopes = ['https://www.googleapis.com/auth/prediction', 'https://www.googleapis.com/auth/calendar.readonly']
+service_account = Google::APIClient::JWTAsserter.new(email, scopes, key)
+
+client.authorization = service_account.authorize
+
+calendar_service = client.discovered_api('calendar', 'v3')
+
+calendarId = "substantial.com_il6c8bmfic8js0vgje0jnjjp7k@group.calendar.google.com"
+
+# params = {'calendarId' => calendarId}
+
+result = client.execute(api_method: calendar_service.events.list, parameters: params)
+
+# calendar = HueConference::Calendar.new(result.data)
+# result.data.items.each do |event|
+#  @events = Calendar.events
+# end
+# room = HueConference::Room.new('name', calendar)
+#
+# room.events
+# room.next_event
+
+#result = client.execute(api_method: calendar_service.calendar_list.list)
+require 'pry'; binding.pry
+
+puts result.response.env

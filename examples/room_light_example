@@ -19,16 +19,10 @@ my_light = manifest.lights.select do |light|
   light.name == 'Test Lamp 1'
 end.first
 
-on = true
+my_light.sync!
 
-while true do
-
+loop do
   sleep(1)
-  if on
-    on = false
-    my_light.turn_off
-  else
-    on = true
-    my_light.turn_on
-  end
+  my_light.toggle
 end
+

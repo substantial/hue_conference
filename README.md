@@ -1,6 +1,10 @@
 # HueConference
 
-TODO: Write a gem description
+Control [Philips Hue](https://www.meethue.com/en-US) light bulbs. Hook up to
+Google Calendar to trigger events.
+
+Install a lightbulb into a conference room and signal to occupants that they're
+time is almost up.
 
 ## Installation
 
@@ -18,7 +22,7 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Look under `/examples/` for, you guessed it, examples!
 
 ## Contributing
 
@@ -27,3 +31,4 @@ TODO: Write usage instructions here
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+

@@ -19,7 +19,7 @@ describe HueConference::LightManifest do
     let(:hue) { mock }
     let(:ruhue_client) { Ruhue::Client.new(hue, "foousername") }
     let(:manifest) { HueConference::LightManifest.new(ruhue_client) }
-    let(:response) {
+    let(:response_data) {
       {
         "1" => { "name" => "Bedroom" },
         "2" => { "name" => "Kitchen" }
@@ -27,7 +27,9 @@ describe HueConference::LightManifest do
     }
 
     before do
-      ruhue_client.stub(:get) { response }
+      @response = mock
+      @response.stub(:data).and_return(response_data)
+      ruhue_client.stub(:get) { @response }
       HueConference::Light.stub(:new) {
         light_stub = mock
         light_stub.stub(:client=)
@@ -41,8 +43,8 @@ describe HueConference::LightManifest do
     end
 
     it "should instantiate lights" do
-      HueConference::Light.should_receive(:new).with("1", response["1"])
-      HueConference::Light.should_receive(:new).with("2", response["2"])
+      HueConference::Light.should_receive(:new).with("1", response_data["1"])
+      HueConference::Light.should_receive(:new).with("2", response_data["2"])
       manifest.build_manifest
     end
   end

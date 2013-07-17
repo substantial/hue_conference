@@ -1,4 +1,5 @@
 require 'ruhue'
+require 'hue_conference/light'
 
 class HueConference::LightManifest
 
@@ -10,7 +11,7 @@ class HueConference::LightManifest
   end
 
   def build_manifest
-    lights_hash = @client.get("/lights")
+    lights_hash = @client.get("/lights").data
     lights_hash.each_pair do |light_id, light_properties|
       light = HueConference::Light.new(light_id, light_properties)
       light.client = @client

@@ -24,6 +24,13 @@ Or install it yourself as:
 
 Look under `/examples/` for, you guessed it, examples!
 
+## Development
+
+* Run `cp .ruby-version.example .ruby-version`
+* cd out and back into the directory, e.g. `cd .. && cd hue_conference`
+* `rvm info` should now show using a hue_conference gemset and whichever ruby
+  version is in .ruby-version
+
 ## Contributing
 
 1. Fork it

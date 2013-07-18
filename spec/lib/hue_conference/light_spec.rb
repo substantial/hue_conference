@@ -62,11 +62,7 @@ describe "HueConference::Light" do
         }
       }
     }
-    let(:response) { mock_response = double
-                     mock_response.stub(:data).and_return(light_state)
-                     mock_response
-    }
-
+    let(:response) { double(data: light_state) }
 
     before do
       @light.client = mock_client

@@ -1,9 +1,10 @@
 class HueConference::Room
 
-  attr_reader :name, :lights
+  attr_reader :name
+  attr_accessor :lights, :calendar, :event_starting_callback, :event_ending_callback
 
-  def initialize(name='')
-    @name = name
+  def initialize(room_config_hash)
+    @name = room_config_hash[:name]
     @lights = []
   end
 
@@ -14,4 +15,19 @@ class HueConference::Room
   def turn_on_lights
     @lights.each(&:on)
   end
+
+  def find_light(location)
+    @lights.select do |light|
+      light.location == location
+    end.first
+  end
+
+  def event_starting
+    instance_eval &@event_starting_callback if @event_starting_callback.respond_to?(:to_proc)
+  end
+
+  def event_ending
+    instance_eval &@event_ending_callback if @event_ending_callback.respond_to?(:to_proc)
+  end
 end
+

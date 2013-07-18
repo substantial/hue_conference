@@ -1,6 +1,6 @@
 class HueConference::Light
   attr_reader :name, :id
-  attr_accessor :client
+  attr_accessor :client, :location
 
   def initialize(id, properties = {})
     @id = id

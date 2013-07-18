@@ -2,16 +2,23 @@ require 'spec_helper'
 
 describe "HueConference::Room" do
 
-  let(:room) { HueConference::Room.new('bar') }
+  let(:room_config_hash) { { name: "Test Room" } }
+  let(:room) { HueConference::Room.new(room_config_hash) }
 
   it "should have name" do
-    room.name.should == 'bar'
+    room.name.should == 'Test Room'
   end
 
   it "should have a light" do
     light = double
     room.lights << light
     room.lights.should include light
+  end
+
+  it "should have a calendar" do
+    calendar = double
+    room.calendar = calendar
+    room.calendar.should == calendar
   end
 
   it "should be able to turn off lights" do
@@ -29,4 +36,42 @@ describe "HueConference::Room" do
     light.should_receive(:on)
     room.turn_on_lights
   end
+
+  describe "#find_light" do
+    it "should return the matching light by location" do
+      indoor_light = double(location: "indoor")
+      outdoor_light = double(location: "outdoor")
+
+      room.lights << outdoor_light << indoor_light
+
+      room.find_light("indoor").should == indoor_light
+    end
+  end
+
+  describe "starting event" do
+    it "should call the event_starting_callback" do
+      room.stub(:foo)
+      room.should_receive(:foo)
+      room.event_starting_callback = Proc.new { |r| r.foo }
+      room.event_starting
+    end
+
+    it "shouldn't blow up if callback isn't set" do
+      expect { room.event_starting }.not_to raise_error
+    end
+  end
+
+  describe "ending event" do
+    it "should call the event_ending_callback" do
+      room.stub(:foo)
+      room.should_receive(:foo)
+      room.event_ending_callback = Proc.new { |r| r.foo }
+      room.event_ending
+    end
+
+    it "shouldn't blow up if callback isn't set" do
+      expect { room.event_ending }.not_to raise_error
+    end
+  end
 end
+

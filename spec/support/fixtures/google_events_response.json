@@ -1,0 +1,61 @@
+{
+  "kind": "calendar#events",
+  "etag": "\"SOME_EVENTS_ETAG\"",
+  "summary": "Some Summary",
+  "updated": "2013-07-17T21:22:23.829Z",
+  "timeZone": "America/Los_Angeles",
+  "accessRole": "owner",
+  "defaultReminders": [
+    {
+    "method": "popup",
+    "minutes": 5
+    }
+  ],
+  "nextPageToken": "next_page_token",
+  "items": [
+    {
+    "kind": "calendar#event",
+    "etag": "\"event_etag\"",
+    "id": "event_id",
+    "status": "confirmed",
+    "htmlLink": "event_html_link",
+    "created": "2010-07-09T21:23:41.000Z",
+    "updated": "1970-01-01T00:00:00.000Z",
+    "summary": "event_summary",
+    "description": "event_description",
+    "location": "event_location",
+    "creator": {
+      "email": "create_email"
+    },
+    "organizer": {
+      "email": "organizer_email"
+    },
+    "start": {
+      "dateTime": "2010-07-09T15:00:00-07:00"
+    },
+    "end": {
+      "dateTime": "2010-07-09T17:00:00-07:00"
+    },
+    "iCalUID": "some_ical_UID",
+    "sequence": 14,
+    "attendees": [
+      {
+      "email": "some_dude@hotmail.com",
+      "displayName": "Hunk",
+      "self": true,
+      "responseStatus": "needsAction"
+      },
+      {"email": "foo@bar.com",
+        "organizer": true,
+        "responseStatus": "accepted"
+      }
+    ],
+    "guestsCanInviteOthers": false,
+    "privateCopy": true,
+    "reminders": {
+      "useDefault": true
+    }
+  }
+  ]
+}
+

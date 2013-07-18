@@ -10,5 +10,4 @@ end
 Dir[File.join(SPEC_ROOT, '../lib/**/*.rb')].each{ |file| require file }
 
 Dir[File.join(SPEC_ROOT, 'support', '*.rb')].each{ |file| require file }
-Dir[File.join(SPEC_ROOT, 'support', 'shared_examples', '*.rb')].each{ |file| require file }
 

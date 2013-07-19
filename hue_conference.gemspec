@@ -3,20 +3,23 @@ lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'hue_conference/version'
 
-Gem::Specification.new do |gem|
-  gem.name          = "hue_conference"
-  gem.version       = HueConference::VERSION
-  gem.authors       = ["Shawn Dempsey", "Shaun Dern"]
-  gem.email         = ["sndempsey@gmail.com", "smdern@gmail.com"]
-  gem.description   = %q{Use Google Calendar events to affect Philips Hue Wifi Lightbulbs}
-  gem.summary       = gem.description
-  gem.homepage      = "https://github.com/substantial/hue_conference"
+Gem::Specification.new do |spec|
+  spec.name          = "hue_conference"
+  spec.version       = HueConference::VERSION
+  spec.authors       = ["Shawn Dempsey", "Shaun Dern"]
+  spec.email         = ["sndempsey@gmail.com", "smdern@gmail.com"]
+  spec.description   = %q{Use Google Calendar events to affect Philips Hue Wifi Lightbulbs}
+  spec.summary       = spec.description
+  spec.homepage      = "https://github.com/substantial/hue_conference"
+  spec.license       = "MIT"
 
-  gem.files         = `git ls-files`.split($/)
-  gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
-  gem.require_paths = ["lib"]
-  gem.add_dependency "ruhue", "~> 0.1.0"
-  gem.add_dependency "google-api-client", "~> 0.6.3"
-  gem.add_development_dependency 'rspec'
+  spec.files         = `git ls-files`.split($/)
+  spec.executables   = spec.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
+  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
+  spec.require_paths = ["lib"]
+  spec.add_dependency "ruhue", "~> 0.1.0"
+  spec.add_dependency "google-api-middle_man", "~> 0.0.1"
+
+  spec.add_development_dependency 'rspec'
 end
+

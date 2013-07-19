@@ -30,9 +30,7 @@ json_config = {
 }
 
 rooms = []
-travel_agent = HueConference::GoogleTravelAgent.new(json_config[:google_config])
-
-require "hue_conference"
+travel_agent = GoogleTravelAgent::Agent.new(json_config[:google_config])
 
 hue = Ruhue.discover
 

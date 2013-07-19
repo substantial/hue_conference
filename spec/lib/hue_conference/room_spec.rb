@@ -97,5 +97,12 @@ describe "HueConference::Room" do
       room.next_end_time.should be_a DateTime
     end
   end
+
+  describe "#next_event" do
+    it "should return the next, upcoming event" do
+      room.stub_chain(:calendar, :next_event) { "next_event" }
+      room.next_event.should == "next_event"
+    end
+  end
 end
 

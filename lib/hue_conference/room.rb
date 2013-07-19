@@ -42,6 +42,10 @@ class HueConference::Room
     calendar.next_event.start_date
   end
 
+  def next_event
+    calendar.next_event
+  end
+
   def next_end_time
     calendar.next_event.end_date
   end

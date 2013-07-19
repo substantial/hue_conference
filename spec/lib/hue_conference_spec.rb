@@ -76,7 +76,7 @@ describe "HueConference::Application" do
     end
 
     it "should build the rooms" do
-      HueConference::RoomBuilder.should_receive(:new).with(rooms_config)
+      HueConference::RoomBuilder.should_receive(:new).with(rooms_config, light_manifest, google_agent)
       room_builder.should_receive(:build)
       app.send(:build_rooms)
     end

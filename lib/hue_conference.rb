@@ -14,7 +14,6 @@ module HueConference
     attr_reader :google_agent, :client, :light_manifest
 
     def initialize(config)
-
       @google_agent = GoogleAPIMiddleMan::Agent.new(config['google_config'])
       setup_ruhue_client(config["hue_account_name"])
 
@@ -31,7 +30,7 @@ module HueConference
     private
 
     def build_rooms
-      @rooms = HueConference::RoomBuilder.new(@rooms_config).build
+      @rooms = HueConference::RoomBuilder.new(@rooms_config, @light_manifest, @google_agent).build
     end
 
     def setup_ruhue_client(hue_account_name)

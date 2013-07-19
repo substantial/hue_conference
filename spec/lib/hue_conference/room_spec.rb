@@ -86,14 +86,14 @@ describe "HueConference::Room" do
 
   describe "#next_start_time" do
     it "should return a time" do
-      room.stub_chain(:calendar, :next_event, :start_time) { DateTime.new }
+      room.stub_chain(:calendar, :next_event, :start_date) { DateTime.new }
       room.next_start_time.should be_a DateTime
     end
   end
 
   describe "#next_end_time" do
     it "should return a time" do
-      room.stub_chain(:calendar, :next_event, :end_time) { DateTime.new }
+      room.stub_chain(:calendar, :next_event, :end_date) { DateTime.new }
       room.next_end_time.should be_a DateTime
     end
   end

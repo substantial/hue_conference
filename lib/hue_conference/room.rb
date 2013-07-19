@@ -37,6 +37,5 @@ class HueConference::Room
   def next_end_time
     calendar.next_event.end_time
   end
-
 end
 

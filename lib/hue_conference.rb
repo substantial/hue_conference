@@ -4,6 +4,7 @@ require "hue_conference/light"
 require "hue_conference/light_manifest"
 require "hue_conference/calendar"
 require "hue_conference/google_travel_agent"
+require "hue_conference/event"
 
 module HueConference
   # Your code goes here...

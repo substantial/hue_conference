@@ -5,7 +5,9 @@ require "hue_conference/light_manifest"
 require "hue_conference/calendar"
 require "hue_conference/event"
 require "hue_conference/room_builder"
+
 require "google-api-middle_man"
+require "color"
 
 module HueConference
 

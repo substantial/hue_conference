@@ -181,5 +181,23 @@ describe "HueConference::Light" do
       @light.saturation(0.75)
     end
   end
+
+  describe "#color" do
+    before do
+      @light.stub(:update_state)
+    end
+
+    it "should convert the Color::RGB to HSL" do
+      hsl_color = double(l: 0.5, s: 0.5, h: 0.5)
+
+      color = double(to_hsl: hsl_color)
+      color.should_receive(:to_hsl)
+
+      calculated_colors = { bri: 128, sat: 128, hue: 32768 }
+
+      @light.should_receive(:update_state).with(calculated_colors)
+      @light.color(color)
+    end
+  end
 end
 

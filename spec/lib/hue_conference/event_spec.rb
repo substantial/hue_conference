@@ -1,21 +1,24 @@
 require 'spec_helper'
 
 describe "HueConference::Event" do
+  let(:start_time) { Time.now }
+  let(:end_time) { Time.now }
+  let(:google_event_object) { double(start: double(dateTime: start_time), end: double(dateTime: end_time)) }
 
   it "should should set the start date" do
-    event = HueConference::Event.new(google_events_response_hash['items'][0])
-    event.start_date.should == DateTime.parse("2010-07-09T15:00:00-07:00")
+    event = HueConference::Event.new(google_event_object)
+    event.start_date.should == DateTime.parse(start_time.to_s)
   end
 
   it "should should set the end date" do
-    event = HueConference::Event.new(google_events_response_hash['items'][0])
-    event.end_date.should == DateTime.parse("2010-07-09T17:00:00-07:00")
+    event = HueConference::Event.new(google_event_object)
+    event.end_date.should == DateTime.parse(end_time.to_s)
   end
 
   describe "sorting, <==>" do
-    let(:old_event) { HueConference::Event.new(google_events_response_hash['items'][0]) }
-    let(:new_event) { HueConference::Event.new(google_events_response_hash['items'][0]) }
-    let(:newest_event) { HueConference::Event.new(google_events_response_hash['items'][0]) }
+    let(:old_event) { HueConference::Event.new(google_event_object) }
+    let(:new_event) { HueConference::Event.new(google_event_object) }
+    let(:newest_event) { HueConference::Event.new(google_event_object) }
 
     before do
       old_event.instance_variable_set(:@start_date, DateTime.new(2001))

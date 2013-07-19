@@ -13,7 +13,7 @@ module HueConference
 
     def build_events(google_events_response)
       @events.clear
-      google_events_response.each do |event_hash|
+      google_events_response.items.each do |event_hash|
         @events << HueConference::Event.new(event_hash)
       end
     end

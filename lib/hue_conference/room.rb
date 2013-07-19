@@ -22,12 +22,20 @@ class HueConference::Room
     end.first
   end
 
+  def on_event_start &block
+    self.event_starting_callback = block
+  end
+
+  def on_event_end &block
+    self.event_ending_callback = block
+  end
+
   def event_starting
-    instance_eval &@event_starting_callback if @event_starting_callback.respond_to?(:to_proc)
+    @event_starting_callback.call(self) if @event_starting_callback.respond_to?(:call)
   end
 
   def event_ending
-    instance_eval &@event_ending_callback if @event_ending_callback.respond_to?(:to_proc)
+    @event_ending_callback.call(self) if @event_ending_callback.respond_to?(:call)
   end
 
   def next_start_time

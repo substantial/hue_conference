@@ -3,7 +3,11 @@ require 'spec_helper'
 describe "HueConference::Event" do
   let(:start_time) { Time.now }
   let(:end_time) { Time.now }
-  let(:google_event_object) { double(start: double(dateTime: start_time), end: double(dateTime: end_time)) }
+  let(:google_event_object) { double(start: double(dateTime: start_time),
+                                     end: double(dateTime: end_time),
+                                     summary: "Event Name"
+                                    )
+  }
 
   it "should should set the start date" do
     event = HueConference::Event.new(google_event_object)
@@ -13,6 +17,11 @@ describe "HueConference::Event" do
   it "should should set the end date" do
     event = HueConference::Event.new(google_event_object)
     event.end_date.should == DateTime.parse(end_time.to_s)
+  end
+
+  it "should have an event summary/name" do
+    event = HueConference::Event.new(google_event_object)
+    event.name.should == "Event Name"
   end
 
   describe "sorting, <==>" do

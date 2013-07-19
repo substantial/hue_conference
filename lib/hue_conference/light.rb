@@ -9,6 +9,7 @@ module HueConference
     STATE_PROPERTIES = %w[on hue bri sat ct alert effect transitiontime]
     MAX_BRIGHTNESS = 255
     MAX_SATURATION = 255
+    MAX_HUE = 65536
 
     def initialize(id, properties = {})
       @id = id
@@ -30,8 +31,22 @@ module HueConference
       end
     end
 
+    def color(new_color)
+      hsl = new_color.to_hsl
+      update_state(bri: (hsl.l * MAX_BRIGHTNESS).round,
+                   sat: (hsl.s * MAX_SATURATION).round,
+                   hue: (hsl.h * MAX_HUE).round
+                  )
+    end
+
     def toggle
       @on ? turn_off : turn_on
+    end
+
+    def hue(new_hue)
+      invalid = new_hue > MAX_HUE || new_hue < 0
+      raise OutOfRange, "Value must be integer between 0 - #{MAX_HUE}" if invalid
+      update_state(hue: new_hue)
     end
 
     def brightness(factor)

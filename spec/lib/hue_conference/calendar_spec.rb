@@ -7,17 +7,17 @@ describe 'HueConference::Calendar' do
   end
 
   describe "#build_events" do
-    let(:google_events_response) { google_events_response_hash['items'] }
+    let(:event_hashs) { double(items: ['foo']) }
     let(:calendar) { HueConference::Calendar.new('calendar_id') }
 
     it "should build events given Google API Response" do
-      HueConference::Event.should_receive(:new).with(google_events_response[0])
-      calendar.build_events(google_events_response)
+      HueConference::Event.should_receive(:new).with('foo')
+      calendar.build_events(event_hashs)
     end
 
     it "should clear existing events" do
       calendar.instance_variable_set(:@events, ['foo'])
-      calendar.build_events({})
+      calendar.build_events(double(items: []))
       calendar.instance_variable_get(:@events).should be_empty
     end
   end

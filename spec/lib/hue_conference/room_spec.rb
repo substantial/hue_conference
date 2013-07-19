@@ -50,10 +50,15 @@ describe "HueConference::Room" do
 
   describe "#starting_event" do
     it "should call the event_starting_callback" do
-      room.stub(:foo)
-      room.should_receive(:foo)
-      room.event_starting_callback = Proc.new { |r| r.foo }
+      result = nil
+      room.on_event_start do |r|
+        result = true
+        r.should eq(room)
+      end
+
       room.event_starting
+
+      result.should be_true
     end
 
     it "shouldn't blow up if callback isn't set" do
@@ -63,10 +68,15 @@ describe "HueConference::Room" do
 
   describe "#ending_event" do
     it "should call the event_ending_callback" do
-      room.stub(:foo)
-      room.should_receive(:foo)
-      room.event_ending_callback = Proc.new { |r| r.foo }
+      result = nil
+      room.on_event_end do |r|
+        result = true
+        r.should eq(room)
+      end
+
       room.event_ending
+
+      result.should be_true
     end
 
     it "shouldn't blow up if callback isn't set" do

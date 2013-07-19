@@ -6,11 +6,11 @@ require 'hue_conference/version'
 Gem::Specification.new do |gem|
   gem.name          = "hue_conference"
   gem.version       = HueConference::VERSION
-  gem.authors       = ["Shawn Dempsey"]
-  gem.email         = ["sndempsey@gmail.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
-  gem.homepage      = ""
+  gem.authors       = ["Shawn Dempsey", "Shaun Dern"]
+  gem.email         = ["sndempsey@gmail.com", "smdern@gmail.com"]
+  gem.description   = %q{Use Google Calendar events to affect Philips Hue Wifi Lightbulbs}
+  gem.summary       = gem.description
+  gem.homepage      = "https://github.com/substantial/hue_conference"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }

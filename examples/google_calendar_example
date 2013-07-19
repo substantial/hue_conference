@@ -16,7 +16,7 @@ rooms.each do |room|
     indoor_light.toggle unless indoor_light.nil?
 
     outdoor_light = r.find_light('outdoor')
-    outdoor_light.turn_on unless outdoor_light.nil?
+    outdoor_light.toggle unless outdoor_light.nil?
   end
   require 'pry'; binding.pry
   # room_event_managers << RoomEventManager.new(room)

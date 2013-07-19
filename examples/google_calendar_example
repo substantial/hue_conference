@@ -2,65 +2,14 @@
 
 require 'hue_conference'
 
-email = '444643631838-fv16bph1k6sudkvhkjkti702k5pcd925@developer.gserviceaccount.com'
-calendarId = "substantial.com_il6c8bmfic8js0vgje0jnjjp7k@group.calendar.google.com"
+config = JSON.parse(IO.read(File.join(File.dirname(__FILE__), "sample_config.json")) )
 
-json_config = {
-  google_config: {
-    application_name: 'HueCon',
-    key_location: 'client.p12',
-    google_service_email: email
-  },
-  rooms: [
-    {
-      name: "Turf Room",
-      calendar_id: calendarId,
-      lights: [
-        {
-          "name" => "Turf Indoor",
-          "location" => "indoor"
-        },
-        {
-          "name" => "Turf Outdoor",
-          "location" => "outdoor"
-        }
-      ]
-    }
-  ]
-}
+app = HueConference::Application.new(config)
 
-rooms = []
-travel_agent = GoogleTravelAgent::Agent.new(json_config[:google_config])
+rooms = app.rooms
 
-hue = Ruhue.discover
-
-client = Ruhue::Client.new(hue, "substantial")
-
-if client.registered?
-  puts "It appears your already registered with the Hub. Play away!"
-elsif client.register("ruhue")
-  puts "A new application has been registered with the Hub as #{client.username}. Play away!"
-end
-
-manifest = HueConference::LightManifest.new(client)
-
-json_config[:rooms].each do |room_hash|
-  calendar = HueConference::Calendar.new(room_hash[:calendar_id])
-  calendar.build_events(travel_agent.calendar_events(calendar.id))
-
-  new_room = HueConference::Room.new(room_hash)
-  new_room.calendar = calendar
-
-  room_hash[:lights].each do |light|
-    l = manifest.find_light(light["name"])
-    next if l.nil?
-    l.location = light["location"]
-    new_room.lights << l
-  end
-
-  rooms << new_room
-end
-
+# Initialize rooms
+room_event_managers = []
 rooms.each do |room|
   room.on_event_start do |r|
     indoor_light = r.find_light('indoor')
@@ -69,9 +18,28 @@ rooms.each do |room|
     outdoor_light = r.find_light('outdoor')
     outdoor_light.turn_on unless outdoor_light.nil?
   end
-  room.event_starting
-
   require 'pry'; binding.pry
+  # room_event_managers << RoomEventManager.new(room)
 end
 
-
+# # Event loop
+# loop do
+#
+#   room_event_managers.each do |room_manager|
+#     room_manager.update
+#   end
+#
+# #     if next_start_event != room.next_event
+# #       next_start_event_thread.kill()
+# #     end
+# #
+# #     next_start_event = Thread.new do
+# #       sleep(until_start_time)
+# #       room.start_event
+# #     end
+# #
+# #     room.next_end_time
+#   # 1 min
+#   sleep(60)
+# end
+#

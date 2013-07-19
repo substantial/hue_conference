@@ -48,7 +48,7 @@ describe "HueConference::Room" do
     end
   end
 
-  describe "starting event" do
+  describe "#starting_event" do
     it "should call the event_starting_callback" do
       room.stub(:foo)
       room.should_receive(:foo)
@@ -61,7 +61,7 @@ describe "HueConference::Room" do
     end
   end
 
-  describe "ending event" do
+  describe "#ending_event" do
     it "should call the event_ending_callback" do
       room.stub(:foo)
       room.should_receive(:foo)
@@ -71,6 +71,20 @@ describe "HueConference::Room" do
 
     it "shouldn't blow up if callback isn't set" do
       expect { room.event_ending }.not_to raise_error
+    end
+  end
+
+  describe "#next_start_time" do
+    it "should return a time" do
+      room.stub_chain(:calendar, :next_event, :start_time) { DateTime.new }
+      room.next_start_time.should be_a DateTime
+    end
+  end
+
+  describe "#next_end_time" do
+    it "should return a time" do
+      room.stub_chain(:calendar, :next_event, :end_time) { DateTime.new }
+      room.next_end_time.should be_a DateTime
     end
   end
 end

@@ -37,3 +37,4 @@ describe "HueConference::Event" do
   end
 
 end
+

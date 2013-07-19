@@ -5,30 +5,68 @@ require 'hue_conference'
 email = '444643631838-fv16bph1k6sudkvhkjkti702k5pcd925@developer.gserviceaccount.com'
 calendarId = "substantial.com_il6c8bmfic8js0vgje0jnjjp7k@group.calendar.google.com"
 
-config = {
-  application_name: 'HueCon',
-  key_location: 'client.p12',
-  google_service_email: email
+json_config = {
+  google_config: {
+    application_name: 'HueCon',
+    key_location: 'client.p12',
+    google_service_email: email
+  },
+  rooms: [
+    {
+      name: "Turf Room",
+      calendar_id: calendarId,
+      lights: {
+        1: {
+          "name" => "Turf Indoor",
+          "location" => "indoor"
+        },
+        2: {
+          "name" => "Turf Outdoor",
+          "location" => "outdoor"
+        }
+      }
+    },
+    {
+      name: "Pauls Old office",
+      calendar_id: "old office calendar id",
+      lights: {
+        "paulIndoor" => "indoor"
+      }
+    }
+  ]
 }
 
+rooms = []
+travel_agent = HueConference::GoogleTravelAgent.new(json_config[:google_config])
 
-travel_agent = HueConference::GoogleTravelAgent.new(config)
+manifest = LightManifest.new.build
 
-puts travel_agent.calendar_events(calendarId)
+# json_config[:rooms].each do |room_hash|
+#   calendar = HueConference::Calendar.new(room[:calendar_id])
+#   calendar.build_events(travel_agent.calendar_events(calendar.id))
+#   new_room = HueConference::Room.new(room_hash)
+#   new_room.calendar = calendar
+#   room[:lights].each do |light|
+#
+#     l = manifest.find_light(light["name"])
+#     l.location = light["location"]
+#     new_room.lights << l
+#   end
+#   rooms << new_room
+# end
 
-#result = client.execute(api_method: calendar_service.events.list, parameters: params)
-#
-#calendar = HueConference::Calendar.new(calendar_id)
-#
-#
-#calendar.build_events(servicer.calendar_events(calendar.id))
-#
-#room = HueConference::Room.new('name', calendar)
-#
-#room.events
-#room.next_event
+rooms.each do |room|
+  room.event_starting_callback = Proc.new { |room|
+    room.find_light('indoor').turn_on
+    room.find_light('outdoor').turn_on
+  }
+  room.event_starting
 
-#result = client.execute(api_method: calendar_service.calendar_list.list)
+  room.event_ending_callback do |room|
+    room.find_light('indoor').turn_off
+    room.find_light('outdoor').turn_off
+  end
+end
+
 require 'pry'; binding.pry
 
-# puts result.response.env

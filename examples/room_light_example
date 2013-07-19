@@ -13,15 +13,11 @@ elsif client.register("ruhue")
 end
 
 manifest = HueConference::LightManifest.new(client)
-manifest.build_manifest
 
 my_light = manifest.lights.select do |light|
-  light.name == 'Test Lamp 1'
+  light.name == 'Turf Indoor'
 end.first
 
-my_light.sync!
-
-require 'pry'; binding.pry
 loop do
   sleep(1)
   my_light.toggle

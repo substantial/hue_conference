@@ -29,5 +29,14 @@ class HueConference::Room
   def event_ending
     instance_eval &@event_ending_callback if @event_ending_callback.respond_to?(:to_proc)
   end
+
+  def next_start_time
+    calendar.next_event.start_time
+  end
+
+  def next_end_time
+    calendar.next_event.end_time
+  end
+
 end
 

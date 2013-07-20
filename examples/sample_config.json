@@ -17,6 +17,10 @@
         {
           "name": "Turf Outdoor",
           "location": "outdoor"
+        },
+        {
+          "name": "Test Light",
+          "location": "Other light"
         }
       ]
     }

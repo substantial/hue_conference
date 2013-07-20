@@ -14,7 +14,7 @@ class BeatLights < Processing::App
     @minim = Minim.new(self)
     @beat = BeatDetect.new
     @beat.detect_mode(BeatDetect::FREQ_ENERGY)
-    @beat.set_sensitivity(100)
+    @beat.set_sensitivity(200)
     @input = @minim.get_line_in
 
     p "setup finished"

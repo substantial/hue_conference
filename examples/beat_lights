@@ -10,11 +10,13 @@ rooms = app.rooms
 
 r = rooms.first
 
-lightA = r.lights.first
-lightB = r.lights.last
+lightA = r.lights[0]
+lightB = r.lights[1]
+lightC = r.lights[2]
 
 lightA.on!
 lightB.on!
+lightC.on!
 
 
 colors = [Color::RGB::Red,
@@ -35,8 +37,9 @@ loop do
       was_beat = false
     elsif !was_beat
       was_beat = true
-      lightA.color!(colors.sample)
-      lightB.color!(colors.sample)
+      Thread.new { lightA.color!(colors.sample) }.join
+      Thread.new { lightB.color!(colors.sample) }.join
+      Thread.new { lightC.color!(colors.sample) }.join
       p output
     end
   end

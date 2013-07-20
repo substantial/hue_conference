@@ -17,6 +17,7 @@ describe HueConference::LightManifest do
   end
 
   describe "#build_manifest" do
+    let(:light) { double.as_null_object }
     let(:hue) { double }
     let(:ruhue_client) { Ruhue::Client.new(hue, "foousername") }
     let(:manifest) { HueConference::LightManifest.new(ruhue_client) }
@@ -31,11 +32,7 @@ describe HueConference::LightManifest do
       @response = double
       @response.stub(:data).and_return(response_data)
       ruhue_client.stub(:get) { @response }
-      HueConference::Light.stub(:new) {
-        light_stub = double
-        light_stub.stub(:client=)
-        light_stub
-      }
+      HueConference::Light.stub(:new) { light }
     end
 
     it "should return a list of lights" do
@@ -54,6 +51,11 @@ describe HueConference::LightManifest do
     it "should instantiate lights" do
       HueConference::Light.should_receive(:new).with("1", response_data["1"])
       HueConference::Light.should_receive(:new).with("2", response_data["2"])
+      manifest.build_manifest
+    end
+
+    it "should sync the lights" do
+      light.should_receive(:sync!)
       manifest.build_manifest
     end
   end

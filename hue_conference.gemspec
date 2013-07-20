@@ -18,7 +18,8 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
   spec.add_dependency "ruhue", "~> 0.1.0"
-  spec.add_dependency "google-api-middle_man", "~> 0.1.0"
+  spec.add_dependency "google-api-middle_man", "~> 0.1.5"
+  spec.add_dependency "color", "~> 1.4.2"
 
   spec.add_development_dependency 'rspec'
 end

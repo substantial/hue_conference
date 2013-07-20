@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+
+require 'ruby-processing'
+
+class Visualizer < Processing::App
+
+  # Load minim and import the packages we'll be using
+  load_library "minim"
+  import "ddf.minim"
+  import "ddf.minim.analysis"
+
+  def setup
+    smooth  # smoother == prettier
+    size(1280,100)  # let's pick a more interesting size
+
+    background 10  # ...and a darker background color
+    @minim = Minim.new(self)
+    @beat = BeatDetect.new
+    @input = @minim.get_line_in
+  end
+
+  def draw
+    # nothing here yet...
+    @beat.detect(@input.left)
+    change_color if @beat.is_onset
+  end
+
+  def change_color
+  end
+end
+
+Visualizer.new :title => "Visualizer"
+

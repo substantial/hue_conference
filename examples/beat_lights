@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+
+require "hue_conference"
+
+config = JSON.parse(IO.read(File.join(File.dirname(__FILE__), "sample_config.json")) )
+
+app = HueConference::Application.new(config)
+
+rooms = app.rooms
+
+r = rooms.first
+
+lightA = r.lights.first
+lightB = r.lights.last
+
+lightA.on!
+lightB.on!
+
+
+colors = [Color::RGB::Red,
+          Color::RGB::Blue,
+          Color::RGB::SteelBlue,
+          Color::RGB::Green,
+          Color::RGB::Yellow,
+          Color::RGB::Purple,
+          Color::RGB::from_html("#c20000")
+]
+
+was_beat = false
+loop do
+  File.open('beat_output', "r") do |f|
+    output = f.read
+
+    if output.nil? || output.empty?
+      was_beat = false
+    elsif !was_beat
+      was_beat = true
+      lightA.color!(colors.sample)
+      lightB.color!(colors.sample)
+      p output
+    end
+  end
+end

@@ -32,15 +32,13 @@ describe "HueConference::Light" do
     end
 
     it "should turn on the light" do
-      @light.instance_variable_set(:@on, false)
       @light.should_receive(:update_state).with(on: true)
-      @light.turn_on
+      @light.on!
     end
 
     it "should turn off the light" do
-      @light.instance_variable_set(:@on, true)
       @light.should_receive(:update_state).with(on: false)
-      @light.turn_off
+      @light.off!
     end
   end
 
@@ -117,16 +115,16 @@ describe "HueConference::Light" do
 
   describe "#toggle" do
     it "should turn on if off" do
-      @light.should_receive(:turn_on)
-      @light.should_not_receive(:turn_off)
       @light.instance_variable_set(:@on, false)
+      @light.should_receive(:on!)
+      @light.should_not_receive(:off!)
       @light.toggle
     end
 
     it "should turn off if on" do
-      @light.should_receive(:turn_off)
-      @light.should_not_receive(:turn_on)
       @light.instance_variable_set(:@on, true)
+      @light.should_receive(:off!)
+      @light.should_not_receive(:on!)
       @light.toggle
     end
   end
@@ -160,31 +158,31 @@ describe "HueConference::Light" do
     end
   end
 
-  describe "#brightness" do
+  describe "#brightness!" do
     before do
-      @light.stub(:update_state)
+      @light.stub(:write_state)
     end
 
     it "should update the brightness" do
-      @light.should_receive(:update_state).with(bri: 128)
-      @light.brightness(0.5)
+      @light.should_receive(:write_state).with(bri: 128)
+      @light.brightness!(0.5)
     end
   end
 
-  describe "#saturation" do
+  describe "#saturation!" do
     before do
-      @light.stub(:update_state)
+      @light.stub(:write_state)
     end
 
     it "should update the saturation" do
-      @light.should_receive(:update_state).with(sat: 191)
-      @light.saturation(0.75)
+      @light.should_receive(:write_state).with(sat: 191)
+      @light.saturation!(0.75)
     end
   end
 
-  describe "#color" do
+  describe "#color!" do
     before do
-      @light.stub(:update_state)
+      @light.stub(:write_state)
     end
 
     it "should convert the Color::RGB to HSL" do
@@ -193,11 +191,22 @@ describe "HueConference::Light" do
       color = double(to_hsl: hsl_color)
       color.should_receive(:to_hsl)
 
-      calculated_colors = { bri: 128, sat: 128, hue: 32768 }
+      calculated_colors = { bri: 128, sat: 128, hue: 32768, transitiontime: 1 }
 
-      @light.should_receive(:update_state).with(calculated_colors)
-      @light.color(color)
+      @light.should_receive(:write_state).with(calculated_colors)
+      @light.color!(color)
     end
   end
+
+  # describe "#update_state" do
+  #   it "should write the state for each requested property" do
+  #     @light.stub(:write_state)
+
+  #     @light.should_receive(:brightness).with(1.0)
+  #     @light.should_receive(:color).with('red')
+  #     @light.should_receive(:on).with(true)
+  #     @light.update_state(color: 'red', brightness: 1.0, on: true)
+  #   end
+  # end
 end
 

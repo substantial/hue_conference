@@ -16,12 +16,12 @@ module HueConference
       @name = properties['name']
     end
 
-    def turn_on
-      update_state(on: true) unless @on
+    def on!
+      update_state(on(true))
     end
 
-    def turn_off
-      update_state(on: false) if @on
+    def off!
+      update_state(on(false))
     end
 
     def sync!
@@ -31,42 +31,72 @@ module HueConference
       end
     end
 
-    def color(new_color)
-      hsl = new_color.to_hsl
-      update_state(bri: (hsl.l * MAX_BRIGHTNESS).round,
-                   sat: (hsl.s * MAX_SATURATION).round,
-                   hue: (hsl.h * MAX_HUE).round
-                  )
+    def toggle
+      @on ? off! : on!
     end
 
-    def toggle
-      @on ? turn_off : turn_on
+    def color!(new_color)
+      write_state(color(new_color))
+    end
+
+    def hue!(new_hue)
+      write_state(hue(new_hue))
+    end
+
+    def brightness!(factor)
+      write_state(brightness(factor))
+    end
+
+    def saturation!(factor)
+      write_state(saturation(factor))
+    end
+
+    def update_state(new_state = {})
+      options = {}
+      new_state.keys.each do |key|
+        options.merge!(self.send(key, new_state[key]))
+      end
+      write_state(options)
+    end
+
+    private
+
+    def on(new_state)
+      { :on => new_state }
     end
 
     def hue(new_hue)
       invalid = new_hue > MAX_HUE || new_hue < 0
       raise OutOfRange, "Value must be integer between 0 - #{MAX_HUE}" if invalid
-      update_state(hue: new_hue)
+      { :hue => (new_hue * MAX_HUE).round }
     end
 
-    def brightness(factor)
-      validate_factor(factor)
-      update_state(bri: (MAX_BRIGHTNESS * factor).round )
+    def color(new_color)
+      hsl = new_color.to_hsl
+      {
+        :bri => (hsl.l * MAX_BRIGHTNESS).round,
+        :sat => (hsl.s * MAX_SATURATION).round,
+        :hue => (hsl.h * MAX_HUE).round,
+        :transitiontime => 1
+      }
     end
 
     def saturation(factor)
       validate_factor(factor)
-      update_state(sat: (MAX_SATURATION * factor).round )
+      { :sat => (MAX_SATURATION * factor).round }
     end
 
-    private
+    def brightness(factor)
+      validate_factor(factor)
+      { :bri => (MAX_BRIGHTNESS * factor).round }
+    end
 
     def validate_factor(factor)
       invalid = (factor < 0.0 || factor > 1.0)
       raise FloatOutOfRange, "Number must be between 0.0 to 1.0" if invalid
     end
 
-    def update_state(new_state={})
+    def write_state(new_state={})
       result = @client.put("/lights/#{id}/state", new_state)
 
       result.data.each do |state|
@@ -82,5 +112,4 @@ module HueConference
       end
     end
   end
-
 end

@@ -53,42 +53,49 @@ module HueConference
 
     def update_state(new_state = {})
       options = {}
+
+      if new_state.has_key?(:color)
+        color_state = new_state.delete(:color)
+        options.merge!(self.send(:color, color_state))
+      end
+
       new_state.keys.each do |key|
         options.merge!(self.send(key, new_state[key]))
       end
+
       write_state(options)
     end
 
     private
 
     def on(new_state)
-      { :on => new_state }
+      { on: new_state }
     end
 
     def hue(new_hue)
       invalid = new_hue > MAX_HUE || new_hue < 0
       raise OutOfRange, "Value must be integer between 0 - #{MAX_HUE}" if invalid
-      { :hue => (new_hue * MAX_HUE).round }
+      { hue: (new_hue * MAX_HUE).round }
     end
 
     def color(new_color)
       hsl = new_color.to_hsl
       {
-        :bri => (hsl.l * MAX_BRIGHTNESS).round,
-        :sat => (hsl.s * MAX_SATURATION).round,
-        :hue => (hsl.h * MAX_HUE).round,
-        :transitiontime => 1
+        bri: (hsl.l * MAX_BRIGHTNESS).round,
+        sat: (hsl.s * MAX_SATURATION).round,
+        hue: (hsl.h * MAX_HUE).round,
+        transitiontime: 1
       }
     end
 
     def saturation(factor)
       validate_factor(factor)
-      { :sat => (MAX_SATURATION * factor).round }
+      { sat: (MAX_SATURATION * factor).round }
     end
 
     def brightness(factor)
       validate_factor(factor)
-      { :bri => (MAX_BRIGHTNESS * factor).round }
+      { bri: (MAX_BRIGHTNESS * factor).round }
     end
 
     def validate_factor(factor)
@@ -113,3 +120,4 @@ module HueConference
     end
   end
 end
+

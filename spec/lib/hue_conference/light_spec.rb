@@ -198,15 +198,35 @@ describe "HueConference::Light" do
     end
   end
 
-  # describe "#update_state" do
-  #   it "should write the state for each requested property" do
-  #     @light.stub(:write_state)
+  describe "#update_state" do
+    before do
+      @light.stub(:write_state)
+      @light.stub(brightness: {bri: 'foo'})
+      @light.stub(color: {hue: 'red', bri: 'bar'})
+      @light.stub(on: {on: true})
+    end
 
-  #     @light.should_receive(:brightness).with(1.0)
-  #     @light.should_receive(:color).with('red')
-  #     @light.should_receive(:on).with(true)
-  #     @light.update_state(color: 'red', brightness: 1.0, on: true)
-  #   end
-  # end
+    it "should convert each state property" do
+      @light.should_receive(:brightness).with(1.0)
+      @light.should_receive(:color).with('red')
+      @light.should_receive(:on).with(true)
+
+      @light.update_state(brightness: 1.0, on: true, color: 'red')
+    end
+
+    it "should set the state from the built up the request" do
+      converted_hash = { hue: 'red', on: true, bri: 'bar'  }
+      @light.should_receive(:write_state).with(converted_hash)
+
+      @light.update_state(on: true, color: 'red')
+    end
+
+    it "should choose explicit brightness over color" do
+      converted_hash = { hue: 'red', on: true, bri: 'foo'  }
+      @light.should_receive(:write_state).with(converted_hash)
+
+      @light.update_state(brightness: 1.0, on: true, color: 'red')
+    end
+  end
 end
 

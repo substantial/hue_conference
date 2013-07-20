@@ -1,4 +1,5 @@
 # Beat Lights
+# Require jruby and use ruby-processing gem
 
 class BeatLights < Processing::App
   # Load minim and import the packages we'll be using
@@ -29,8 +30,8 @@ class BeatLights < Processing::App
         puts "beat"
       end
     end
-    # @output_file.puts "BEAT!" if @beat.is_kick
   end
 end
 
 BeatLights.new :title => "Beat Lights"
+

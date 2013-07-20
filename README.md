@@ -24,6 +24,8 @@ Or install it yourself as:
 
 Look under `/examples/` for, you guessed it, examples!
 
+You can use any of [these colors](http://color.rubyforge.org/Color/RGB.html)
+
 ## Development
 
 * Run `cp .ruby-version.example .ruby-version`

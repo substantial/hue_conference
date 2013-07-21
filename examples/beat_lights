@@ -3,9 +3,7 @@
 require "hue_conference"
 
 config = JSON.parse(IO.read(File.join(File.dirname(__FILE__), "sample_config.json")) )
-
 app = HueConference::Application.new(config)
-
 rooms = app.rooms
 
 r = rooms.first
@@ -18,7 +16,6 @@ lightA.on!
 lightB.on!
 lightC.on!
 
-
 colors = [Color::RGB::Red,
           Color::RGB::Blue,
           Color::RGB::SteelBlue,
@@ -28,20 +25,26 @@ colors = [Color::RGB::Red,
           Color::RGB::from_html("#c20000")
 ]
 
-was_beat = false
-loop do
-  File.open('beat_output', "r") do |f|
-    output = f.read
+beat_detector_command = File.join(File.dirname(__FILE__), 'beat_detector.sh')
 
-    if output.nil? || output.empty?
-      was_beat = false
-    elsif !was_beat
-      was_beat = true
-      Thread.new { lightA.color!(colors.sample) }.join
-      Thread.new { lightB.color!(colors.sample) }.join
-      Thread.new { lightC.color!(colors.sample) }.join
-      p output
+def do_stuff(input)
+  puts "doing stuff: #{input}"
+  Thread.new { lightA.color!(colors.sample) }.join
+  Thread.new { lightB.color!(colors.sample) }.join
+  Thread.new { lightC.color!(colors.sample) }.join
+end
+
+require "pty"
+begin
+  PTY.spawn( beat_detector_command ) do |r, w, pid|
+    begin
+      r.each do |line|
+        do_stuff(line)
+      end
+    rescue Errno::EIO
     end
   end
+rescue PTY::ChildExited => e
+  puts "The child process exited!"
 end
 

@@ -14,22 +14,18 @@ class BeatLights < Processing::App
     background 10  # ...and a darker background color
     @minim = Minim.new(self)
     @beat = BeatDetect.new
-    @beat.detect_mode(BeatDetect::FREQ_ENERGY)
-    @beat.set_sensitivity(200)
+    # @beat.detect_mode(BeatDetect::FREQ_ENERGY)
+    @beat.detect_mode(BeatDetect::SOUND_ENERGY)
+    @beat.set_sensitivity(100)
     @input = @minim.get_line_in
 
-    p "setup finished"
+    puts "setup finished"
   end
 
   def draw
-    # nothing here yet...
     @beat.detect(@input.left)
-    File.open('beat_output', "w+") do |file|
-      if @beat.is_kick
-        file.puts "BEAT!"
-        puts "beat"
-      end
-    end
+    puts "beat #{Time.now}" if @beat.isOnset
+    # puts "beat #{Time.now}" if @beat.isKick
   end
 end
 

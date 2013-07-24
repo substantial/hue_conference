@@ -4,8 +4,8 @@ describe "HueConference::Event" do
 
   let(:start_time) { DateTime.now }
   let(:end_time) { DateTime.now }
-  let(:google_event_object) { double(start: double(dateTime: start_time, date: nil),
-                                     end: double(dateTime: end_time, date: nil),
+  let(:google_event_object) { double(start: double(dateTime: start_time, respond_to: nil),
+                                     end: double(dateTime: end_time, respond_to: nil),
                                      summary: "Event Name"
                                     )
   }
@@ -34,6 +34,26 @@ describe "HueConference::Event" do
 
     it "should be true if event has started" do
       event.started?.should == true
+    end
+  end
+
+  describe "private methods" do
+
+    describe "#parse_date_time" do
+
+      it "should parse the date" do
+        date = Date.today
+        date_response = double(date: date, dateTime: nil, respond_to: true)
+
+        event.send(:parse_date_time, date_response).should == DateTime.parse(date.to_s)
+      end
+
+      it "should parse the date" do
+        date = DateTime.now
+        date_response = double(dateTime: date, date: nil, respond_to: false)
+
+        event.send(:parse_date_time, date_response).should == DateTime.parse(date.to_s)
+      end
     end
   end
 end

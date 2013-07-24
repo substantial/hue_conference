@@ -27,7 +27,6 @@ describe "HueConference::Event" do
     it "should have an event summary/name" do
       event.name.should == "Event Name"
     end
-
   end
 
   describe "#started?" do

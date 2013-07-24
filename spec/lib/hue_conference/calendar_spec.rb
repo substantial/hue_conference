@@ -58,6 +58,5 @@ describe 'HueConference::Calendar' do
       calendar.next_event
     end
   end
-
 end
 

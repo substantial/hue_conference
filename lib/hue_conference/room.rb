@@ -4,7 +4,7 @@ class HueConference::Room
   attr_accessor :lights, :calendar, :event_starting_callback, :event_ending_callback
 
   def initialize(room_config_hash)
-    @name = room_config_hash[:name]
+    @name = room_config_hash["name"]
     @lights = []
   end
 

@@ -1,5 +1,4 @@
 class HueConference::Event
-  include Comparable
 
   attr_reader :start_date, :end_date, :name
 
@@ -8,10 +7,6 @@ class HueConference::Event
 
     @start_date = parse_date_time(google_events_response.start)
     @end_date = parse_date_time(google_events_response.end)
-  end
-
-  def <=>(other)
-     @start_date <=> other.start_date
   end
 
   def started?

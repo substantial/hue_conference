@@ -16,7 +16,7 @@ class HueConference::Event
   private
 
   def parse_date_time(response_date)
-    date_time = response_date.date ? response_date.date : response_date.dateTime
+    date_time = response_date.respond_to(:date) ? response_date.date : response_date.dateTime
 
     DateTime.parse(date_time.to_s)
   end

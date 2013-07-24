@@ -37,26 +37,5 @@ describe "HueConference::Event" do
       event.started?.should == true
     end
   end
-
-  describe "sorting, <==>" do
-    let(:old_event) { HueConference::Event.new(google_event_object) }
-    let(:new_event) { HueConference::Event.new(google_event_object) }
-    let(:newest_event) { HueConference::Event.new(google_event_object) }
-
-    before do
-      old_event.instance_variable_set(:@start_date, DateTime.new(2001))
-      new_event.instance_variable_set(:@start_date, DateTime.new(2003))
-      newest_event.instance_variable_set(:@start_date, DateTime.new(2004))
-    end
-
-    it "should know how to compare each other" do
-      old_event.should < new_event
-      old_event.should < newest_event
-    end
-
-    it "should be sortable" do
-      [new_event, old_event, newest_event].sort.should == [old_event, new_event, newest_event]
-    end
-  end
 end
 

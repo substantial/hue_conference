@@ -113,6 +113,36 @@ describe "HueConference::Light" do
     end
   end
 
+  describe "#reset!" do
+
+    let(:reset_state) {
+      {
+        on: true,
+        hue: 0,
+        saturation: 0,
+        brightness: 0.5,
+      }
+    }
+
+    it "should reset the lights to white" do
+      @light.should_receive(:update_state).with(reset_state)
+      @light.reset!
+    end
+  end
+
+  describe "#debug" do
+
+    before do
+      @light.client = mock_client
+      mock_client.stub(:get).and_return('foo')
+    end
+
+    it "should return the attributes & state for light" do
+      mock_client.should_receive("get").with("/lights/1")
+      @light.debug.should == 'foo'
+    end
+  end
+
   describe "#toggle" do
     it "should turn on if off" do
       @light.instance_variable_set(:@on, false)

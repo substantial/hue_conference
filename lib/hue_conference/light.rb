@@ -26,9 +26,24 @@ module HueConference
 
     def sync!
       light_state = @client.get("/lights/#{id}").data['state']
+
       STATE_PROPERTIES.each do |property|
         instance_variable_set("@#{property}".to_sym, light_state[property])
       end
+    end
+
+    def reset!
+      reset_state = {
+        on: true,
+        hue: 0,
+        saturation: 0,
+        brightness: 0.5,
+      }
+      update_state(reset_state)
+    end
+
+    def debug
+      @client.get("/lights/#{@id}")
     end
 
     def toggle
@@ -75,7 +90,7 @@ module HueConference
     def hue(new_hue)
       invalid = new_hue > MAX_HUE || new_hue < 0
       raise OutOfRange, "Value must be integer between 0 - #{MAX_HUE}" if invalid
-      { hue: (new_hue * MAX_HUE).round }
+      { hue: new_hue }
     end
 
     def color(new_color)

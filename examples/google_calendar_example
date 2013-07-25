@@ -8,19 +8,24 @@ app = HueConference::Application.new(config)
 
 rooms = app.rooms
 
-# Initialize rooms
-room_event_managers = []
-rooms.each do |room|
-  room.on_event_start do |r|
-    indoor_light = r.find_light('indoor')
-    indoor_light.toggle unless indoor_light.nil?
+a = app.rooms[0]
+b = app.rooms[1]
+c = app.rooms[2]
 
-    outdoor_light = r.find_light('outdoor')
-    outdoor_light.toggle unless outdoor_light.nil?
-  end
-  require 'pry'; binding.pry
-  # room_event_managers << RoomEventManager.new(room)
-end
+require 'pry'; binding.pry
+
+# Initialize rooms
+#room_event_managers = []
+#rooms.each do |room|
+#  room.on_event_start do |r|
+#    indoor_light = r.find_light('indoor')
+#    indoor_light.toggle unless indoor_light.nil?
+#
+#    outdoor_light = r.find_light('outdoor')
+#    outdoor_light.toggle unless outdoor_light.nil?
+#  end
+#  # room_event_managers << RoomEventManager.new(room)
+#end
 
 # # Event loop
 # loop do
@@ -29,16 +34,16 @@ end
 #     room_manager.update
 #   end
 #
-# #     if next_start_event != room.next_event
-# #       next_start_event_thread.kill()
-# #     end
-# #
-# #     next_start_event = Thread.new do
-# #       sleep(until_start_time)
-# #       room.start_event
-# #     end
-# #
-# #     room.next_end_time
+#     if next_start_event != room.next_event
+#       next_start_event_thread.kill()
+#     end
+#
+#     next_start_event = Thread.new do
+#       sleep(until_start_time)
+#       room.start_event
+#     end
+#
+#     room.next_end_time
 #   # 1 min
 #   sleep(60)
 # end

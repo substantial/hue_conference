@@ -2,7 +2,7 @@
 
 require "hue_conference"
 
-config = JSON.parse(IO.read(File.join(File.dirname(__FILE__), "sample_config.json")) )
+config = JSON.parse(IO.read(File.join(File.dirname(__FILE__), "hue_conference_config.json")) )
 
 app = HueConference::Application.new(config)
 

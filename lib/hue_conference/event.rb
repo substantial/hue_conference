@@ -5,20 +5,19 @@ class HueConference::Event
   def initialize(google_events_response)
     @name = google_events_response.summary
 
-    @start_date = parse_date_time(google_events_response.start)
-    @end_date = parse_date_time(google_events_response.end)
+    @start_date = convert_date_to_time(google_events_response.start)
+    @end_date = convert_date_to_time(google_events_response.end)
   end
 
   def started?
-    @start_date < DateTime.now
+    @start_date < Time.now.utc
   end
 
   private
 
-  def parse_date_time(response_date)
+  def convert_date_to_time(response_date)
+    date = response_date.dateTime.nil? ? response_date.date : response_date.dateTime
 
-    date_time = response_date.dateTime.nil? ? response_date.date : response_date.dateTime
-
-    DateTime.parse(date_time.to_s)
+    Time.parse(date.to_s).utc
   end
 end

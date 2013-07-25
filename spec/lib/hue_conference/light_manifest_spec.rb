@@ -1,19 +1,22 @@
 require 'spec_helper'
 
 describe HueConference::LightManifest do
-  it "should take a Ruhue Client" do
-    hue = double
-    ruhue_client = Ruhue::Client.new(hue, "foousername")
-    manifest = HueConference::LightManifest.new(ruhue_client)
-    manifest.client.should be_a Ruhue::Client
-  end
 
-  it "should have a collection of lights" do
-    hue = double
-    ruhue_client = Ruhue::Client.new(hue, "foousername")
-    manifest = HueConference::LightManifest.new(ruhue_client)
-    manifest.stub(:build_manifest)
-    manifest.lights.should be_a Array
+  describe "#initialize" do
+    it "should take a Ruhue Client" do
+      hue = double
+      ruhue_client = Ruhue::Client.new(hue, "foousername")
+      manifest = HueConference::LightManifest.new(ruhue_client)
+      manifest.client.should be_a Ruhue::Client
+    end
+
+    it "should have a collection of lights" do
+      hue = double
+      ruhue_client = Ruhue::Client.new(hue, "foousername")
+      manifest = HueConference::LightManifest.new(ruhue_client)
+      manifest.stub(:build_manifest)
+      manifest.lights.should be_a Array
+    end
   end
 
   describe "#build_manifest" do
@@ -51,6 +54,16 @@ describe HueConference::LightManifest do
     it "should instantiate lights" do
       HueConference::Light.should_receive(:new).with("1", response_data["1"])
       HueConference::Light.should_receive(:new).with("2", response_data["2"])
+      manifest.build_manifest
+    end
+
+    it "should reset the lights" do
+      light.should_receive(:reset!)
+      manifest.build_manifest
+    end
+
+    it "should turn the lights off" do
+      light.should_receive(:off!)
       manifest.build_manifest
     end
 

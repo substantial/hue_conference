@@ -17,11 +17,11 @@ describe "HueConference::Event" do
 
   describe "#initialize" do
     it "should should set the start date" do
-      event.start_date.should == DateTime.parse(start_time.to_s)
+      event.start_date.should == Time.parse(start_time.to_s)
     end
 
     it "should should set the end date" do
-      event.end_date.should == DateTime.parse(end_time.to_s)
+      event.end_date.should == Time.parse(end_time.to_s)
     end
 
     it "should have an event summary/name" do
@@ -39,20 +39,22 @@ describe "HueConference::Event" do
 
   describe "private methods" do
 
-    describe "#parse_date_time" do
+    describe "#convert_date_to_time" do
 
-      it "should parse the date" do
+      it "should convert the date to utc time" do
         date = Date.today
         date_response = double(date: date, dateTime: nil)
+        utc_time = Time.parse(date.to_s).utc
 
-        event.send(:parse_date_time, date_response).should == DateTime.parse(date.to_s)
+        event.send(:convert_date_to_time, date_response).should == utc_time
       end
 
-      it "should parse the date time" do
+      it "should convert the date_time to utc time" do
         date_time = DateTime.now
         date_response = double(dateTime: date_time)
+        utc_time = Time.parse(date_time.to_s).utc
 
-        event.send(:parse_date_time, date_response).should == DateTime.parse(date_time.to_s)
+        event.send(:convert_date_to_time, date_response).should == utc_time
       end
     end
   end

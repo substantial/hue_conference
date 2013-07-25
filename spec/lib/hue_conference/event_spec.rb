@@ -43,16 +43,16 @@ describe "HueConference::Event" do
 
       it "should parse the date" do
         date = Date.today
-        date_response = double(date: date, dateTime: nil, respond_to: true)
+        date_response = double(date: date, dateTime: nil)
 
         event.send(:parse_date_time, date_response).should == DateTime.parse(date.to_s)
       end
 
-      it "should parse the date" do
-        date = DateTime.now
-        date_response = double(dateTime: date, date: nil, respond_to: false)
+      it "should parse the date time" do
+        date_time = DateTime.now
+        date_response = double(dateTime: date_time)
 
-        event.send(:parse_date_time, date_response).should == DateTime.parse(date.to_s)
+        event.send(:parse_date_time, date_response).should == DateTime.parse(date_time.to_s)
       end
     end
   end

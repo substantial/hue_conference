@@ -54,6 +54,16 @@ describe HueConference::LightManifest do
       manifest.build_manifest
     end
 
+    it "should reset the lights" do
+      light.should_receive(:reset!)
+      manifest.build_manifest
+    end
+
+    it "should turn the lights off" do
+      light.should_receive(:off!)
+      manifest.build_manifest
+    end
+
     it "should sync the lights" do
       light.should_receive(:sync!)
       manifest.build_manifest

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "HueConference::Room" do
 
-  let(:room_config_hash) { { name: "Test Room" } }
+  let(:room_config_hash) { { 'name' => "Test Room" } }
   let(:room) { HueConference::Room.new(room_config_hash) }
 
   it "should have name" do

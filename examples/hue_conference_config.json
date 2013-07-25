@@ -1,0 +1,35 @@
+{
+  "google_config": {
+    "application_name": "Google Project Name",
+    "key_location": "client.p12",
+    "google_service_email": "google_service_account_email@developer.gserviceaccount.com",
+  },
+  "hue_account_name": "Hue Account Name",
+  "rooms": [
+    {
+      "name": "Room A",
+      "calendar_id": "google_calendar_id@resource.calendar.google.com",
+      "lights": [
+        {
+          "name": "RoomA Outdoor",
+          "location": "outdoor"
+        },
+        {
+          "name": "RoomA Indoor",
+          "location": "indoor"
+        }
+      ]
+    },
+    {
+      "name": "Room B",
+      "calendar_id": "google_calendar_id@resource.calendar.google.com",
+      "lights": [
+        {
+          "name": "RoomB Outdoor",
+          "location": "outdoor"
+        }
+      ]
+    }
+  ]
+}
+

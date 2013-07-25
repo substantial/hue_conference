@@ -19,7 +19,11 @@ module HueConference
     end
 
     def next_event
-      @events.sort.first
+      current_event ? @events[1] : @events.first
+    end
+
+    def current_event
+      @events.find { |e| e.started? }
     end
   end
 end

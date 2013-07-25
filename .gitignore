@@ -17,3 +17,4 @@ test/version_tmp
 tmp
 .ruby-version
 client.p12
+sample_config.json

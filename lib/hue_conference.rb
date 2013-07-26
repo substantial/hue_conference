@@ -5,6 +5,7 @@ require "hue_conference/light_manifest"
 require "hue_conference/calendar"
 require "hue_conference/event"
 require "hue_conference/room_builder"
+require "hue_conference/scheduler"
 
 require "google-api-middle_man"
 require "color"
@@ -27,6 +28,19 @@ module HueConference
     def rooms
       build_rooms if @rooms.nil?
       @rooms
+    end
+
+    def schedule_rooms
+      scheduler = HueConference::Scheduler.new(@client, rooms)
+      response = scheduler.schedule_rooms
+    end
+
+    def all_schedules
+      @client.get("/schedules")
+    end
+
+    def schedule_for_id(id)
+      @client.get("/schedules/#{id}")
     end
 
     private

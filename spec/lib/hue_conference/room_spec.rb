@@ -5,36 +5,42 @@ describe "HueConference::Room" do
   let(:room_config_hash) { { 'name' => "Test Room" } }
   let(:room) { HueConference::Room.new(room_config_hash) }
 
-  it "should have name" do
-    room.name.should == 'Test Room'
+  describe "#initialize" do
+    it "should have name" do
+      room.name.should == 'Test Room'
+    end
+
+    it "should have a light" do
+      light = double
+      room.lights << light
+      room.lights.should include light
+    end
+
+    it "should have a calendar" do
+      calendar = double
+      room.calendar = calendar
+      room.calendar.should == calendar
+    end
   end
 
-  it "should have a light" do
-    light = double
-    room.lights << light
-    room.lights.should include light
+  describe "#turn_off_lights" do
+    it "should be able to turn off lights" do
+      light = double
+      light.stub(:off)
+      room.lights << light
+      light.should_receive(:off)
+      room.turn_off_lights
+    end
   end
 
-  it "should have a calendar" do
-    calendar = double
-    room.calendar = calendar
-    room.calendar.should == calendar
-  end
-
-  it "should be able to turn off lights" do
-    light = double
-    light.stub(:off)
-    room.lights << light
-    light.should_receive(:off)
-    room.turn_off_lights
-  end
-
-  it "should be able to turn on lights" do
-    light = double
-    light.stub(:on)
-    room.lights << light
-    light.should_receive(:on)
-    room.turn_on_lights
+  describe "#turn_on_lights" do
+    it "should be able to turn on lights" do
+      light = double
+      light.stub(:on)
+      room.lights << light
+      light.should_receive(:on)
+      room.turn_on_lights
+    end
   end
 
   describe "#find_light" do

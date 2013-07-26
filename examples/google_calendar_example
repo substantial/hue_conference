@@ -2,49 +2,15 @@
 
 require 'hue_conference'
 
-config = JSON.parse(IO.read(File.join(File.dirname(__FILE__), "sample_config.json")) )
+config = JSON.parse(IO.read(File.join(File.dirname(__FILE__), "hue_conference_config.json")) )
 
 app = HueConference::Application.new(config)
 
-rooms = app.rooms
+#require 'pry'; binding.pry
 
-a = app.rooms[0]
-b = app.rooms[1]
-c = app.rooms[2]
+loop do
+  puts app.schedule_rooms
 
-require 'pry'; binding.pry
+  sleep(60)
+end
 
-# Initialize rooms
-#room_event_managers = []
-#rooms.each do |room|
-#  room.on_event_start do |r|
-#    indoor_light = r.find_light('indoor')
-#    indoor_light.toggle unless indoor_light.nil?
-#
-#    outdoor_light = r.find_light('outdoor')
-#    outdoor_light.toggle unless outdoor_light.nil?
-#  end
-#  # room_event_managers << RoomEventManager.new(room)
-#end
-
-# # Event loop
-# loop do
-#
-#   room_event_managers.each do |room_manager|
-#     room_manager.update
-#   end
-#
-#     if next_start_event != room.next_event
-#       next_start_event_thread.kill()
-#     end
-#
-#     next_start_event = Thread.new do
-#       sleep(until_start_time)
-#       room.start_event
-#     end
-#
-#     room.next_end_time
-#   # 1 min
-#   sleep(60)
-# end
-#

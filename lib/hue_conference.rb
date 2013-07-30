@@ -6,6 +6,7 @@ require "hue_conference/calendar"
 require "hue_conference/event"
 require "hue_conference/room_builder"
 require "hue_conference/scheduler"
+require "hue_conference/schedule"
 
 require "google-api-middle_man"
 require "color"
@@ -14,40 +15,33 @@ module HueConference
 
   class Application
 
-    attr_reader :google_agent, :client, :light_manifest
+    attr_reader :client, :rooms
 
     def initialize(config)
-      @google_agent = GoogleAPIMiddleMan::Agent.new(config['google_config'])
+      google_agent = GoogleAPIMiddleMan::Agent.new(config['google_config'])
+
       setup_ruhue_client(config["hue_account_name"])
 
-      @light_manifest = HueConference::LightManifest.new(@client)
+      light_manifest = HueConference::LightManifest.new(@client)
 
-      @rooms_config = config['rooms']
-    end
+      rooms_config = config['rooms']
 
-    def rooms
-      build_rooms if @rooms.nil?
-      @rooms
+      @rooms = HueConference::RoomBuilder.new(config['rooms'], light_manifest, google_agent).build
     end
 
     def schedule_rooms
-      scheduler = HueConference::Scheduler.new(@client, rooms)
-      response = scheduler.schedule_rooms
+      scheduler.schedule_rooms
     end
 
-    def all_schedules
-      @client.get("/schedules")
+    def schedule
+      scheduler.all_schedules
     end
 
-    def schedule_for_id(id)
-      @client.get("/schedules/#{id}")
+    def scheduler
+      @scheduler ||= HueConference::Scheduler.new(@client, @rooms)
     end
 
     private
-
-    def build_rooms
-      @rooms = HueConference::RoomBuilder.new(@rooms_config, @light_manifest, @google_agent).build
-    end
 
     def setup_ruhue_client(hue_account_name)
       hue = Ruhue.discover

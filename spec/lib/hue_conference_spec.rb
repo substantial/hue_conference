@@ -15,12 +15,16 @@ describe "HueConference::Application" do
   let(:hue_bridge) { double.as_null_object }
   let(:hue_client) { double.as_null_object }
   let(:light_manifest) { double.as_null_object }
+  let(:rooms_config) { config_hash["rooms"] }
+  let(:rooms) { double }
+  let(:room_builder) { double(build: rooms) }
 
   before do
     GoogleAPIMiddleMan::Agent.stub(new: google_agent)
     Ruhue::Client.stub(new: hue_client)
     Ruhue.stub(discover: hue_bridge)
     HueConference::LightManifest.stub(new: light_manifest)
+    HueConference::RoomBuilder.stub(new: room_builder)
     $stdout.stub(:puts)
   end
 
@@ -30,13 +34,8 @@ describe "HueConference::Application" do
     end
 
     it "should create a google_agent" do
-      GoogleAPIMiddleMan::Agent.should_receive(:new).with("some google config")
+      GoogleAPIMiddleMan::Agent.should_receive(:new).with(config_hash["google_config"])
       app = HueConference::Application.new(config_hash)
-    end
-
-    it "should have a google_agent" do
-      app = HueConference::Application.new(config_hash)
-      app.google_agent.should == google_agent
     end
 
     it "should discover the Hue bridge" do
@@ -45,7 +44,7 @@ describe "HueConference::Application" do
     end
 
     it "should discover the Ruhue client" do
-      Ruhue::Client.should_receive(:new).with(hue_bridge, "hue_account_name")
+      Ruhue::Client.should_receive(:new).with(hue_bridge, config_hash["hue_account_name"])
       app = HueConference::Application.new(config_hash)
     end
 
@@ -59,57 +58,24 @@ describe "HueConference::Application" do
       app = HueConference::Application.new(config_hash)
     end
 
-    it "should have a light manifest" do
-      app = HueConference::Application.new(config_hash)
-      app.light_manifest.should == light_manifest
-    end
-  end
-
-  describe "#build_rooms" do
-    let(:app) { HueConference::Application.new(config_hash) }
-    let(:rooms_config) { config_hash["rooms"] }
-    let(:rooms) { double }
-    let(:room_builder) { double(build: rooms) }
-
-    before do
-      HueConference::RoomBuilder.stub(new: room_builder)
-    end
-
     it "should build the rooms" do
       HueConference::RoomBuilder.should_receive(:new).with(rooms_config, light_manifest, google_agent)
       room_builder.should_receive(:build)
-      app.send(:build_rooms)
+      app = HueConference::Application.new(config_hash)
     end
 
-    it "should keep the rooms" do
-      app.send(:build_rooms).should == rooms
-    end
-  end
-
-  describe "#rooms" do
-    let(:app) { HueConference::Application.new(config_hash) }
-
-    it "should build the room if hasn't already" do
-      app.should_receive(:build_rooms)
-      app.rooms
-    end
-
-    it "shouldn't build the room if already done" do
-      app.instance_variable_set(:@rooms, double)
-      app.should_not_receive(:build_rooms)
-      app.rooms
+    it "should have rooms" do
+      app = HueConference::Application.new(config_hash)
+      app.rooms.should == rooms
     end
   end
 
   describe "#schedule_rooms" do
     let(:app) { HueConference::Application.new(config_hash) }
-    let(:rooms) { double }
-    let(:room_builder) { double(build: rooms) }
     let(:response) { 'some response' }
     let(:scheduler) { double(schedule_rooms: response) }
 
     before do
-      HueConference::RoomBuilder.stub(new: room_builder)
       HueConference::Scheduler.stub(new: scheduler)
     end
 

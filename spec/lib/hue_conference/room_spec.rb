@@ -6,8 +6,8 @@ describe "HueConference::Room" do
   let(:room) { HueConference::Room.new(room_config_hash) }
 
   describe "#initialize" do
-    it "should have name" do
-      room.name.should == 'Test Room'
+    it "should have formatted name" do
+      room.name.should == 'test_room'
     end
 
     it "should have a light" do
@@ -20,6 +20,24 @@ describe "HueConference::Room" do
       calendar = double
       room.calendar = calendar
       room.calendar.should == calendar
+    end
+  end
+
+  describe "#update_calendar" do
+
+    let(:calendar) { double(sync_events!: true) }
+    let(:schedule) { double.as_null_object }
+
+    before do
+      HueConference::Calendar.stub(:new) { calendar }
+      HueConference::Schedule.stub(:new) { schedule }
+    end
+
+    it "should sync the calendar" do
+      room.stub(:next_event) { double.as_null_object }
+      room.calendar = calendar
+      calendar.should_receive(:sync_events!)
+      room.update_schedule
     end
   end
 

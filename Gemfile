@@ -8,3 +8,6 @@ gem 'guard'
 gem 'guard-rspec'
 gem 'rb-fsevent'
 
+#TODO submit pull request so this can get added back to gemspec
+gem 'ruhue', github: 'substantial/ruhue', branch: 'add_delete_to_client'
+

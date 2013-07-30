@@ -17,7 +17,6 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
-  spec.add_dependency "ruhue", "~> 0.1.0"
   spec.add_dependency "google-api-middle_man", "~> 0.2.1"
   spec.add_dependency "color", "~> 1.4.2"
 

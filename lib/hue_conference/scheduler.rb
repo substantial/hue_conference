@@ -2,67 +2,46 @@ require 'ruhue'
 
 class HueConference::Scheduler
 
-  attr_reader :client, :rooms
+  attr_reader :client, :rooms, :current_schedule
 
   def initialize(client, rooms)
     @client = client
     @rooms = rooms
+    @current_schedule = []
   end
 
   def schedule_rooms
-    success = []
     @rooms.each do |room|
-      if room.next_event
-        schedule_event(room, event_starting)
-        schedule_event(room, event_ending)
-        success << room.name
-      else
-        success = ['No events to schedule']
+      schedule = room.update_schedule
+      if schedule
+        create_schedule(schedule[:items])
       end
     end
-    success
+    'rooms scheduled'
+  end
+
+  def update_current_schedule
+    all_schedules.each do |id, hash|
+      @current_schedule[id] = hash['name']
+    end unless all_schedules.empty?
+  end
+
+  def all_schedules
+    @client.get("/schedules").data
+  end
+
+  def find_schedule(id)
+    @client.get("/schedules/#{id}")
   end
 
   private
 
-  def event_starting
-    {
-      start: true,
-      command: {
-        'on' => true
-      }
-    }
+  def create_schedule(schedule)
+    schedule.each { |s| write(s) }
   end
 
-  def event_ending
-    {
-      start: false,
-      command: {
-        'on' => false
-      }
-    }
-  end
-
-  def schedule_event(room, action)
-    event = room.next_event
-    light = room.lights.first
-
-    state = action[:start] ? 'Start' : 'End'
-    date = action[:start] ? :start_date : :end_date
-
-    params = {
-      "name" => "#{state}: #{event.name}",
-      "command" => {
-        "address" => "/api/substantial/lights/#{light.id}/state",
-        "method" => "PUT",
-        "body" => action[:command]
-      },
-      "time" => event.send(date).iso8601.chomp('Z')
-    }
-    write_event(params)
-  end
-
-  def write_event(params)
-    @client.post("/schedules", params)
+  def write(schedule)
+    response = @client.post("/schedules", schedule)
+    puts response.data
   end
 end

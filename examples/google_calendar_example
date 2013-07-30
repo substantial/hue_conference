@@ -6,11 +6,11 @@ config = JSON.parse(IO.read(File.join(File.dirname(__FILE__), "hue_conference_co
 
 app = HueConference::Application.new(config)
 
-#require 'pry'; binding.pry
+require 'pry'; binding.pry
 
-loop do
-  puts app.schedule_rooms
-
-  sleep(60)
-end
+#loop do
+#  puts app.schedule_rooms
+#
+#  sleep(60)
+#end
 

@@ -23,6 +23,24 @@ describe "HueConference::Room" do
     end
   end
 
+  describe "#update_calendar" do
+
+    let(:calendar) { double(sync_events!: true) }
+    let(:schedule) { double.as_null_object }
+
+    before do
+      HueConference::Calendar.stub(:new) { calendar }
+      HueConference::Schedule.stub(:new) { schedule }
+    end
+
+    it "should sync the calendar" do
+      room.stub(:next_event) { double.as_null_object }
+      room.calendar = calendar
+      calendar.should_receive(:sync_events!)
+      room.update_schedule
+    end
+  end
+
   describe "#turn_off_lights" do
     it "should be able to turn off lights" do
       light = double

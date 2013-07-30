@@ -8,6 +8,11 @@ class HueConference::Room
     @lights = []
   end
 
+  def update_schedule
+    success = calendar.sync_events!
+    schedule = HueConference::Schedule.new(next_event, self).build if success
+  end
+
   def turn_off_lights
     @lights.each(&:off)
   end

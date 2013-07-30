@@ -2,10 +2,10 @@ require 'spec_helper'
 
 describe "HueConference::Event" do
 
-  let(:start_time) { DateTime.now }
-  let(:end_time) { DateTime.now }
-  let(:google_event_object) { double(start: double(dateTime: start_time, respond_to: nil),
-                                     end: double(dateTime: end_time, respond_to: nil),
+  let(:starting_date) { DateTime.now }
+  let(:ending_date) { DateTime.now }
+  let(:google_event_object) { double(start: double(dateTime: starting_date, respond_to: nil),
+                                     end: double(dateTime: ending_date, respond_to: nil),
                                      summary: "Event Name"
                                     )
   }
@@ -16,21 +16,48 @@ describe "HueConference::Event" do
   end
 
   describe "#initialize" do
-    it "should should set the start date" do
-      event.start_date.should == Time.parse(start_time.to_s)
+    let(:starting_time) { Time.parse(starting_date.to_s) }
+    let(:ending_time) { Time.parse(ending_date.to_s) }
+
+    let(:starting_callback) {
+      {
+        name: 'event_name',
+        type: 'starting',
+        light: 'outdoor',
+        time: starting_time,
+        command: { 'on' => true }
+      }
+    }
+
+    let(:ending_callback) {
+      {
+        name: 'event_name',
+        type: 'ending',
+        light: 'outdoor',
+        time: ending_time,
+        command: { 'on' => false }
+      }
+    }
+
+    it "should have a formatted event name" do
+      event.name.should == "event_name"
     end
 
-    it "should should set the end date" do
-      event.end_date.should == Time.parse(end_time.to_s)
+    it "should should set the starting time" do
+      event.starting_time.should == starting_time
     end
 
-    it "should have an event summary/name" do
-      event.name.should == "Event Name"
+    it "should should set the ending time" do
+      event.ending_time.should == ending_time
+    end
+
+    it "should set the callbacks for event" do
+      event.callbacks.should == [starting_callback, ending_callback]
     end
   end
 
   describe "#started?" do
-    let(:start_time) { DateTime.new(2010, 1, 1, 9) }
+    let(:startng_time) { DateTime.new(2010, 1, 1, 9) }
 
     it "should be true if event has started" do
       event.started?.should == true

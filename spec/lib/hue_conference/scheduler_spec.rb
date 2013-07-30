@@ -27,9 +27,9 @@ describe HueConference::Scheduler do
   describe "#schedule_rooms" do
     let(:scheduler) { HueConference::Scheduler.new(hue_client, rooms) }
 
-    it "should schedule all rooms" do
-      scheduler.schedule_rooms
-    end
+    #it "should schedule all rooms" do
+    #  scheduler.schedule_rooms
+    #end
   end
 
 end

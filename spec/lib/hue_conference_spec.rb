@@ -70,18 +70,34 @@ describe "HueConference::Application" do
     end
   end
 
-  describe "#schedule_rooms" do
+  describe "#create_schedule" do
     let(:app) { HueConference::Application.new(config_hash) }
     let(:response) { 'some response' }
     let(:scheduler) { double(schedule_rooms: response) }
+    let(:schedule) { double }
 
     before do
       HueConference::Scheduler.stub(new: scheduler)
     end
 
-    it "should create a new schedule" do
+    it "should schedule each room" do
       HueConference::Scheduler.should_receive(:new).with(hue_client, rooms)
-      app.schedule_rooms.should == response
+      app.create_schedule.should == response
+    end
+  end
+
+  describe "#schedule" do
+    let(:app) { HueConference::Application.new(config_hash) }
+    let(:schedule) { double }
+    let(:scheduler) { double(all_schedules: schedule) }
+
+    before do
+      HueConference::Scheduler.stub(new: scheduler)
+    end
+
+    it "should return the hue schedule" do
+      scheduler.should_receive(:all_schedules)
+      app.schedule.should == schedule
     end
   end
 end

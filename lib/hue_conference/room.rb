@@ -4,13 +4,13 @@ class HueConference::Room
   attr_accessor :lights, :calendar, :event_starting_callback, :event_ending_callback
 
   def initialize(room_config_hash)
-    @name = room_config_hash["name"]
+    @name = room_config_hash["name"].downcase.gsub(/\s+/, '_')
     @lights = []
   end
 
   def update_schedule
     success = calendar.sync_events!
-    schedule = HueConference::Schedule.new(next_event, self).build if success
+    schedule = HueConference::Schedule.new(next_event, self) if success
   end
 
   def turn_off_lights

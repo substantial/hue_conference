@@ -6,8 +6,8 @@ describe "HueConference::Room" do
   let(:room) { HueConference::Room.new(room_config_hash) }
 
   describe "#initialize" do
-    it "should have name" do
-      room.name.should == 'Test Room'
+    it "should have formatted name" do
+      room.name.should == 'test_room'
     end
 
     it "should have a light" do

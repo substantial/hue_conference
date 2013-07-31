@@ -1,47 +1,27 @@
+require 'ostruct'
 require 'hue_conference/room'
 
 class HueConference::Schedule
 
-  def initialize(event, room)
-    @event = event
+  attr_reader :room, :items
+
+  def initialize(room)
     @room = room
-  end
-
-  def build
-    schedule = {}
-    items = []
-
-    room_name = @room.name.downcase.gsub(/\s+/, '')
-    schedule[:title] = room_name
-
-    @event.callbacks.each do |callback|
-      name = "#{room_name}-#{callback[:name]}_#{callback[:type]}"
-      id = @room.find_light(callback[:light]).id
-      command = callback[:command]
-      time = callback[:time].iso8601.chomp('Z')
-
-      items << {
-        "name" => name,
-        "command" => {
-          "address" => "/api/substantial/lights/#{id}/state",
-          "method" => "PUT",
-          "body" => command
-        },
-        "time" => time
-      }
+    @items = room.event.callbacks.map do |callback|
+      build_schedule_item(callback)
     end
-    schedule[:items] = items
-
-    schedule
   end
 
   private
 
-  def room_name_timestamp
-    starting = @event.starting_time.strftime("%m%d%H%M")
-    ending = @event.ending_time.strftime("%m%d%H%M")
+  def build_schedule_item(callback)
+    item = OpenStruct.new
 
-    "#{name}-#{starting}#{ending}"
+    item.name = "#{@room.name}-#{callback.time.strftime("%m%d%H%M")}"
+    item.light_id = @room.find_light(callback.light).id
+    item.command = callback.command
+    item.time = callback.time.iso8601.chomp('Z')
+
+    item
   end
-
 end

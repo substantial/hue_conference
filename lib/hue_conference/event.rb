@@ -1,25 +1,41 @@
+require 'ostruct'
+
 class HueConference::Event
 
   attr_reader :starting_time, :ending_time, :name, :callbacks
 
-  CALLBACK_TYPES = %w(starting ending)
+  DEFAULT_CALLBACKS = %w(starting ending)
 
   def initialize(google_events_response)
     @name = google_events_response.summary.downcase.gsub(/\s/, '_')
 
-    @starting_time = convert_date_to_time(google_events_response.start)
-    @ending_time = convert_date_to_time(google_events_response.end)
+    @starting_time = date_to_utc(google_events_response.start)
+    @ending_time = date_to_utc(google_events_response.end)
 
-    @callbacks = callbacks_from_event
+    @callbacks = DEFAULT_CALLBACKS.map do |callback|
+      OpenStruct.new(send(callback))
+    end
   end
 
   def started?
     @starting_time < Time.now.utc
   end
 
+  def finished?
+    @ending_time < Time.now.utc
+  end
+
+  def underway?
+    started? && !finished?
+  end
+
+  def unstarted?
+    !started? && !finished?
+  end
+
   private
 
-  def convert_date_to_time(response_date)
+  def date_to_utc(response_date)
     date = response_date.dateTime.nil? ? response_date.date : response_date.dateTime
 
     Time.parse(date.to_s).utc
@@ -27,14 +43,8 @@ class HueConference::Event
 
   private
 
-  #TODO Get callbacks from event description on google calenar
-  def callbacks_from_event
-    [event_starting, event_ending]
-  end
-
-  def event_starting
+  def starting
     {
-      name: @name,
       type: 'starting',
       light:'outdoor',
       time: @starting_time,
@@ -42,9 +52,8 @@ class HueConference::Event
     }
   end
 
-  def event_ending
+  def ending
     {
-      name: @name,
       type: 'ending',
       light: 'outdoor',
       time: @ending_time,

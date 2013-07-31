@@ -100,5 +100,29 @@ describe "HueConference::Application" do
       app.schedule.should == schedule
     end
   end
+
+  describe "#scheduler" do
+    let(:app) { HueConference::Application.new(config_hash) }
+    let(:client) { double('hue client') }
+    let(:rooms) { double('rooms') }
+    let(:scheduler) { double('scheduler') }
+
+    before do
+      HueConference::Scheduler.stub(:new) { scheduler }
+      app.instance_variable_set(:@client, client)
+      app.instance_variable_set(:@rooms, rooms)
+    end
+
+    it "should create a new scheduler" do
+      HueConference::Scheduler.should_receive(:new).with(client, rooms)
+      app.scheduler.should == scheduler
+    end
+
+    it "should not create a new schedule if one already created" do
+      app.instance_variable_set(:@scheduler, scheduler)
+      HueConference::Scheduler.should_not_receive(:new)
+      app.scheduler
+    end
+  end
 end
 

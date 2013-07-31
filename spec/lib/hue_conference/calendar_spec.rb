@@ -55,31 +55,31 @@ describe 'HueConference::Calendar' do
   end
 
   describe "#current_event" do
+    let(:unstarted) { double('unstarted', underway?: false, unstarted?: true) }
+    let(:underway) { double('underway', underway?: true, unstarted: false) }
+    let(:finished) { double('finished', underway?: false, unstarted?: false) }
+    let(:events) { [finished, underway, unstarted] }
+
     let(:calendar) { HueConference::Calendar.new(calendar_id, google_agent) }
 
-    it "should return a current event if one is underway" do
-      calendar.instance_variable_set(:@events, events)
-      calendar.current_event.should == current_event
-    end
-  end
+    context "when an event is underway" do
+      before do
+        calendar.instance_variable_set(:@events, events)
+      end
 
-  describe "#next_event" do
-    let(:calendar) { HueConference::Calendar.new(calendar_id, google_agent) }
-
-    it "should return the next unstarted event" do
-      calendar.instance_variable_set(:@events, events)
-      calendar.next_event.should == future_event
+      it "should return the event" do
+        calendar.current_event.should == underway
+      end
     end
 
-    it "should return the next event" do
-      calendar.instance_variable_set(:@events, events)
-      calendar.next_event.should == future_event
-    end
+    context "when no event is underway" do
+      before do
+        calendar.instance_variable_set(:@events, [finished, unstarted])
+      end
 
-    it "should return the first event if no current event" do
-      calendar.instance_variable_set(:@events, [future_event])
-      calendar.events.should_receive(:first)
-      calendar.next_event
+      it "should return the next unstarted event" do
+        calendar.current_event.should == unstarted
+      end
     end
   end
 end

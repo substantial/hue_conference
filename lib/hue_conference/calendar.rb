@@ -28,12 +28,22 @@ module HueConference
       return true
     end
 
-    def next_event
-      current_event ? @events[1] : @events.first
+    def current_event
+      event_underway || next_starting_event
     end
 
-    def current_event
-      @events.find { |e| e.started? }
+    private
+
+    def find_event(type)
+      @events.find { |event| event.send(type) }
+    end
+
+    def event_underway
+      find_event(:underway?)
+    end
+
+    def next_starting_event
+      find_event(:unstarted?)
     end
   end
 end

@@ -58,7 +58,6 @@ describe "HueConference::RoomBuilder" do
       #TODO Fix this test!
       #HueConference::Calendar.should_receive(:new).with('some_calendar_id', google_agent)
       HueConference::Calendar.should_receive(:new)
-      puts builder.google_agent
       builder.build
     end
 

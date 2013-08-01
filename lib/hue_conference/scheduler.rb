@@ -10,15 +10,22 @@ class HueConference::Scheduler
   end
 
   def schedule_rooms
-    delete_current_schedule
+    response = []
+    #delete_current_schedule
 
     @rooms.each do |room|
       schedule = room.update_schedule
 
-      schedule.items.each { |item| write(item) }
+      if schedule
+        schedule.callbacks.each do |callback|
+          response << create_schedule(callback)
+        end
+      else
+        response << "Nothing to schedule"
+      end
     end
 
-    'Schedule Created'
+    response
   end
 
   def all_schedules
@@ -30,6 +37,11 @@ class HueConference::Scheduler
   end
 
   private
+
+  def create_schedule(callback)
+    write(callback)
+    callback.name
+  end
 
   def delete_current_schedule
     all_schedules.each { |id, name| delete(id) }

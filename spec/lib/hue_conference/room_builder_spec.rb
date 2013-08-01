@@ -12,7 +12,7 @@ describe "HueConference::RoomBuilder" do
   }
   let(:light) { double.as_null_object }
   let(:light_manifest) { double(is_a?: true, find_light: light) }
-  let(:google_agent) { double(is_a?: true) }
+  let(:google_agent) { double('google_agent', is_a?: true) }
 
   describe "#initialize" do
 
@@ -55,7 +55,10 @@ describe "HueConference::RoomBuilder" do
     end
 
     it "should create a calendar" do
+      #TODO Fix this test!
+      #HueConference::Calendar.should_receive(:new).with('some_calendar_id', google_agent)
       HueConference::Calendar.should_receive(:new)
+      puts builder.google_agent
       builder.build
     end
 

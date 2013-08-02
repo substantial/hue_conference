@@ -21,7 +21,6 @@ describe "HueConference::Event" do
 
     let(:starting_callback) {
       {
-        name: 'event_name',
         type: 'starting',
         light: 'outdoor',
         time: starting_time,
@@ -31,7 +30,6 @@ describe "HueConference::Event" do
 
     let(:ending_callback) {
       {
-        name: 'event_name',
         type: 'ending',
         light: 'outdoor',
         time: ending_time,

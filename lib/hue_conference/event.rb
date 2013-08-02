@@ -2,7 +2,7 @@ class HueConference::Event
 
   attr_reader :starting_time, :ending_time, :name, :callbacks
 
-  CALLBACK_TYPES = %w(starting ending)
+  DEFAULT_CALLBACKS = %w(starting ending)
 
   def initialize(google_events_response)
     @name = google_events_response.summary.downcase.gsub(/\s/, '_')
@@ -10,7 +10,7 @@ class HueConference::Event
     @starting_time = convert_date_to_time(google_events_response.start)
     @ending_time = convert_date_to_time(google_events_response.end)
 
-    @callbacks = callbacks_from_event
+    @callbacks = DEFAULT_CALLBACKS.map{ |callback| send(callback) }
   end
 
   def started?
@@ -27,14 +27,8 @@ class HueConference::Event
 
   private
 
-  #TODO Get callbacks from event description on google calenar
-  def callbacks_from_event
-    [event_starting, event_ending]
-  end
-
-  def event_starting
+  def starting
     {
-      name: @name,
       type: 'starting',
       light:'outdoor',
       time: @starting_time,
@@ -42,9 +36,8 @@ class HueConference::Event
     }
   end
 
-  def event_ending
+  def ending
     {
-      name: @name,
       type: 'ending',
       light: 'outdoor',
       time: @ending_time,

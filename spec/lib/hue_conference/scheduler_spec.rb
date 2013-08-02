@@ -27,9 +27,9 @@ describe HueConference::Scheduler do
 
   describe "#schedule_rooms" do
     let(:hue_client) { double }
-    let(:callback) { double(name: 'room-starting-callback') }
-    let(:schedule) { double(callbacks: [callback]) }
-    let(:room) { double(update_schedule: schedule) }
+    let(:item) { {'name' => 'room-starting-item'} }
+    let(:schedule) { double(items: [item]) }
+    let(:room) { double(has_upcoming_event?: true, schedule: schedule) }
     let(:rooms) { [room] }
 
     before do
@@ -40,22 +40,26 @@ describe HueConference::Scheduler do
 
       let(:scheduler) { HueConference::Scheduler.new(hue_client, rooms) }
 
-      it "should update the schedule for each room" do
+      before do
+        HueConference::Schedule.stub(:new) { schedule }
+      end
+
+      it "should create a new schedule" do
         scheduler.rooms.each do |room|
-          room.should_receive(:update_schedule)
+          HueConference::Schedule.should_receive(:new).with(room)
         end
         scheduler.schedule_rooms
       end
 
-      it "should write each schedule callback to the hue" do
-        schedule.callbacks.each do |callback|
-          scheduler.should_receive(:write).with(callback)
+      it "should write each schedule item to the hue" do
+        schedule.items.each do |item|
+          scheduler.should_receive(:write).with(item)
         end
         scheduler.schedule_rooms
       end
 
-      it "should return an array of scheduled callbacks" do
-        scheduler.schedule_rooms.should == ['room-starting-callback']
+      it "should return an array of scheduled items" do
+        scheduler.schedule_rooms.should == ['room-starting-item']
       end
     end
 
@@ -64,7 +68,7 @@ describe HueConference::Scheduler do
       let(:scheduler) { HueConference::Scheduler.new(hue_client, rooms) }
 
       before do
-        room.stub(:update_schedule) { false }
+        room.stub(:has_upcoming_event?) { false }
       end
 
       it "should not write any schedule to the hue" do

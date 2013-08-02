@@ -1,6 +1,6 @@
 class HueConference::Room
 
-  attr_reader :name
+  attr_reader :name, :schedule
   attr_accessor :lights, :calendar, :event_starting_callback, :event_ending_callback
 
   def initialize(room_config_hash)
@@ -8,9 +8,8 @@ class HueConference::Room
     @lights = []
   end
 
-  def update_schedule
-    success = calendar.sync_events!
-    schedule = HueConference::Schedule.new(next_event, self) if success
+  def upcoming_event?
+    calendar.sync_events!
   end
 
   def turn_off_lights
@@ -53,6 +52,12 @@ class HueConference::Room
 
   def next_end_time
     calendar.next_event.end_date
+  end
+
+  private
+
+  def create_schedule
+    @schedule = HueConference::Schedule.new(next_event, self) if success
   end
 end
 

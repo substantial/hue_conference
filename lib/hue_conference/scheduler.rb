@@ -14,11 +14,11 @@ class HueConference::Scheduler
     #delete_current_schedule
 
     @rooms.each do |room|
-      schedule = room.update_schedule
+      if room.has_upcoming_event?
+        schedule = HueConference::Schedule.new(room)
 
-      if schedule
-        schedule.callbacks.each do |callback|
-          response << create_schedule(callback)
+        schedule.items.each do |item|
+          response << create_schedule(item)
         end
       else
         response << "Nothing to schedule"
@@ -38,9 +38,9 @@ class HueConference::Scheduler
 
   private
 
-  def create_schedule(callback)
-    write(callback)
-    callback.name
+  def create_schedule(schedule)
+    write(schedule)
+    schedule['name']
   end
 
   def delete_current_schedule

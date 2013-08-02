@@ -1,3 +1,5 @@
+require 'ostruct'
+
 class HueConference::Event
 
   attr_reader :starting_time, :ending_time, :name, :callbacks
@@ -7,19 +9,33 @@ class HueConference::Event
   def initialize(google_events_response)
     @name = google_events_response.summary.downcase.gsub(/\s/, '_')
 
-    @starting_time = convert_date_to_time(google_events_response.start)
-    @ending_time = convert_date_to_time(google_events_response.end)
+    @starting_time = date_to_utc(google_events_response.start)
+    @ending_time = date_to_utc(google_events_response.end)
 
-    @callbacks = DEFAULT_CALLBACKS.map{ |callback| send(callback) }
+    @callbacks = DEFAULT_CALLBACKS.map do |callback|
+      OpenStruct.new(send(callback))
+    end
   end
 
   def started?
     @starting_time < Time.now.utc
   end
 
+  def finished?
+    @ending_time < Time.now.utc
+  end
+
+  def underway?
+    started? && !finished?
+  end
+
+  def unstarted?
+    !started? && !finished?
+  end
+
   private
 
-  def convert_date_to_time(response_date)
+  def date_to_utc(response_date)
     date = response_date.dateTime.nil? ? response_date.date : response_date.dateTime
 
     Time.parse(date.to_s).utc

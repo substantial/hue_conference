@@ -1,7 +1,7 @@
 class HueConference::Room
 
   attr_reader :name, :schedule
-  attr_accessor :lights, :calendar, :event_starting_callback, :event_ending_callback
+  attr_accessor :lights, :calendar
 
   def initialize(room_config_hash)
     @name = room_config_hash["name"].downcase.gsub(/\s+/, '_')
@@ -12,12 +12,12 @@ class HueConference::Room
     calendar.sync_events!
   end
 
-  def turn_off_lights
-    @lights.each(&:off)
+  def turn_on_lights
+    @lights.each(&:on!)
   end
 
-  def turn_on_lights
-    @lights.each(&:on)
+  def turn_off_lights
+    @lights.each(&:off!)
   end
 
   def find_light(location)
@@ -26,32 +26,8 @@ class HueConference::Room
     end.first
   end
 
-  def on_event_start &block
-    self.event_starting_callback = block
-  end
-
-  def on_event_end &block
-    self.event_ending_callback = block
-  end
-
-  def event_starting
-    @event_starting_callback.call(self) if @event_starting_callback.respond_to?(:call)
-  end
-
-  def event_ending
-    @event_ending_callback.call(self) if @event_ending_callback.respond_to?(:call)
-  end
-
-  def next_start_time
-    calendar.next_event.start_date
-  end
-
-  def next_event
-    calendar.next_event
-  end
-
-  def next_end_time
-    calendar.next_event.end_date
+  def event
+    calendar.current_event
   end
 
   private

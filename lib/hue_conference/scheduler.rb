@@ -40,7 +40,7 @@ class HueConference::Scheduler
 
   def create_schedule(schedule)
     write(schedule)
-    schedule['name']
+    schedule.name
   end
 
   def delete_current_schedule
@@ -48,7 +48,16 @@ class HueConference::Scheduler
   end
 
   def write(schedule)
-    response = @client.post("/schedules", schedule)
+    options = {
+      "name" => schedule.name,
+      "command" => {
+        "address" => "/api/substantial/lights/#{schedule.light_id}/state",
+      "method" => "PUT",
+      "body" => schedule.command
+      },
+      "time" => schedule.time
+    }
+    response = @client.post("/schedules", options)
     puts response.data
   end
 

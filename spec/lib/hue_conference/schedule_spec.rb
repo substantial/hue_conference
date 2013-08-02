@@ -4,18 +4,18 @@ describe HueConference::Schedule do
 
   describe "#initialize" do
     let(:callback) {
-      {
+      OpenStruct.new({
         light: 'outdoor',
         time: Time.new(2010, 10, 10, 10, 10),
         command: { 'on' => true }
-      }
+      })
     }
     let(:callbacks) { [callback] }
 
     let(:event) { double(callbacks: callbacks) }
     let(:room_name) { 'testroom' }
     let(:light) { double(id: 1) }
-    let(:room) { double(next_event: event, name: room_name, find_light: light) }
+    let(:room) { double(event: event, name: room_name, find_light: light) }
 
     let(:schedule) { HueConference::Schedule.new(room) }
 
@@ -27,18 +27,15 @@ describe HueConference::Schedule do
       schedule.room.should == room
     end
 
-    it "should build an array of formatted schedule items" do
+    it "should build an array of schedule items from callbacks" do
+      item = OpenStruct.new(
+        name: 'testroom-10101010',
+        light_id: 1,
+        command: { 'on' => true },
+        time: '2010-10-10T10:10:00-07:00'
+      )
 
-      schedule_formatted_response = {
-        "name" => 'testroom-10101010',
-        "command" => {
-          "address" => "/api/substantial/lights/1/state",
-          "method" => "PUT",
-          "body" => { 'on' => true }
-        },
-        "time" => "2010-10-10T10:10:00-07:00"
-      }
-      schedule.items.should == [schedule_formatted_response]
+      schedule.items.should == [item]
     end
   end
 end

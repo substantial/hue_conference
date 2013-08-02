@@ -27,7 +27,7 @@ describe HueConference::Scheduler do
 
   describe "#schedule_rooms" do
     let(:hue_client) { double }
-    let(:item) { {'name' => 'room-starting-item'} }
+    let(:item) { double(name: 'room-starting-item') }
     let(:schedule) { double(items: [item]) }
     let(:room) { double(has_upcoming_event?: true, schedule: schedule) }
     let(:rooms) { [room] }

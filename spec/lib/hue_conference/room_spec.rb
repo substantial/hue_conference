@@ -38,23 +38,32 @@ describe "HueConference::Room" do
     end
   end
 
-  describe "#turn_off_lights" do
-    it "should be able to turn off lights" do
-      light = double
-      light.stub(:off)
-      room.lights << light
-      light.should_receive(:off)
-      room.turn_off_lights
+  describe "event" do
+    it "should return the calendar event to be scheduled" do
+      event = double('calendar event')
+      room.stub_chain(:calendar, :current_event) { event }
+      room.calendar.should_receive(:current_event)
+      room.event.should == event
     end
   end
 
   describe "#turn_on_lights" do
     it "should be able to turn on lights" do
       light = double
-      light.stub(:on)
+      light.stub(:on!)
       room.lights << light
-      light.should_receive(:on)
+      light.should_receive(:on!)
       room.turn_on_lights
+    end
+  end
+
+  describe "#turn_off_lights" do
+    it "should be able to turn off lights" do
+      light = double
+      light.stub(:off!)
+      room.lights << light
+      light.should_receive(:off!)
+      room.turn_off_lights
     end
   end
 
@@ -66,63 +75,6 @@ describe "HueConference::Room" do
       room.lights << outdoor_light << indoor_light
 
       room.find_light("indoor").should == indoor_light
-    end
-  end
-
-  describe "#starting_event" do
-    it "should call the event_starting_callback" do
-      result = nil
-      room.on_event_start do |r|
-        result = true
-        r.should eq(room)
-      end
-
-      room.event_starting
-
-      result.should be_true
-    end
-
-    it "shouldn't blow up if callback isn't set" do
-      expect { room.event_starting }.not_to raise_error
-    end
-  end
-
-  describe "#ending_event" do
-    it "should call the event_ending_callback" do
-      result = nil
-      room.on_event_end do |r|
-        result = true
-        r.should eq(room)
-      end
-
-      room.event_ending
-
-      result.should be_true
-    end
-
-    it "shouldn't blow up if callback isn't set" do
-      expect { room.event_ending }.not_to raise_error
-    end
-  end
-
-  describe "#next_start_time" do
-    it "should return a time" do
-      room.stub_chain(:calendar, :next_event, :start_date) { DateTime.new }
-      room.next_start_time.should be_a DateTime
-    end
-  end
-
-  describe "#next_end_time" do
-    it "should return a time" do
-      room.stub_chain(:calendar, :next_event, :end_date) { DateTime.new }
-      room.next_end_time.should be_a DateTime
-    end
-  end
-
-  describe "#next_event" do
-    it "should return the next, upcoming event" do
-      room.stub_chain(:calendar, :next_event) { "next_event" }
-      room.next_event.should == "next_event"
     end
   end
 end

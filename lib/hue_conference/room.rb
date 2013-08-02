@@ -8,7 +8,7 @@ class HueConference::Room
     @lights = []
   end
 
-  def upcoming_event?
+  def has_upcoming_event?
     calendar.sync_events!
   end
 

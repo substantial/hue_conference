@@ -122,4 +122,26 @@ describe HueConference::Scheduler do
       scheduler.find_schedule(schedule_id).should == schedule
     end
   end
+
+  describe "#delete_all_schedules" do
+
+    let(:all_schedules) {
+      {
+        "1" => {"name" => "testroom-10101010"},
+        "2" => {"name" => "testroom-10101020"}
+      }
+    }
+    let(:scheduler) { HueConference::Scheduler.new(hue_client, rooms) }
+
+    before do
+      hue_client.stub(:delete) { double(data: 'response') }
+      scheduler.stub(:all_schedules) { all_schedules }
+    end
+
+    it "should delete all hue schedules" do
+      hue_client.should_receive(:delete).with("/schedules/1")
+      hue_client.should_receive(:delete).with("/schedules/2")
+      scheduler.delete_all_schedules
+    end
+  end
 end

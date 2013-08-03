@@ -11,7 +11,6 @@ class HueConference::Scheduler
 
   def schedule_rooms
     response = []
-    #delete_current_schedule
 
     @rooms.each do |room|
       if room.has_upcoming_event?
@@ -36,15 +35,15 @@ class HueConference::Scheduler
     @client.get("/schedules/#{id}")
   end
 
+  def delete_all_schedules
+    all_schedules.keys.each(&method(:delete))
+  end
+
   private
 
   def create_schedule(schedule)
     write(schedule)
     schedule.name
-  end
-
-  def delete_current_schedule
-    all_schedules.each { |id, name| delete(id) }
   end
 
   def write(schedule)

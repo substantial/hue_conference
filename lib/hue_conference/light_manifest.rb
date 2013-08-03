@@ -34,9 +34,7 @@ class HueConference::LightManifest
   end
 
   def find_light(light_name)
-    lights.select do |light|
-      light.name == light_name
-    end.first
+    lights.find { |light| light.name == light_name }
   end
 end
 

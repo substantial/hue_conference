@@ -1,9 +1,26 @@
 require "spec_helper"
 
 describe HueConference::Scheduler do
-
   let(:hue_client) { double }
   let(:rooms) { double }
+  let(:all_schedules) {
+    {
+      "2" => {"name" => "testroomone-10101010"},
+      "3" => {"name" => "testroomone-10101020"},
+      "4" => {"name" => "testroomtwo-10101100"},
+      "5" => {"name" => "testroomtwo-10101200"}
+    }
+  }
+  let(:room_one_starting) { {'10101010' => '2'} }
+  let(:room_one_ending) { {'10101020' => '3'} }
+  let(:room_two_starting) { {'10101100' => '4'} }
+  let(:room_two_ending) { {'10101200' => '5'} }
+  let(:current_schedule) {
+    {
+      'testroomone' => [room_one_starting, room_one_ending],
+      'testroomtwo' => [room_two_starting, room_two_ending]
+    }
+  }
 
   describe "#initialize" do
     it "should require a RueHue client" do
@@ -27,7 +44,8 @@ describe HueConference::Scheduler do
 
   describe "#schedule_rooms" do
     let(:hue_client) { double }
-    let(:item) { double(name: 'room-starting-item') }
+    let(:name) { 'testroomone-10101010' }
+    let(:item) { double(name: name) }
     let(:schedule) { double(items: [item]) }
     let(:room) { double(has_upcoming_event?: true, schedule: schedule) }
     let(:rooms) { [room] }
@@ -42,6 +60,18 @@ describe HueConference::Scheduler do
 
       before do
         HueConference::Schedule.stub(:new) { schedule }
+      end
+
+      context "when the room is in the current schedule" do
+
+        before do
+          scheduler.stub(:current_schedule) { current_schedule }
+        end
+
+        it "should only schedule the changed events" do
+          scheduler.should_not_receive(:write)
+          scheduler.schedule_rooms
+        end
       end
 
       it "should create a new schedule" do
@@ -59,7 +89,7 @@ describe HueConference::Scheduler do
       end
 
       it "should return an array of scheduled items" do
-        scheduler.schedule_rooms.should == ['room-starting-item']
+        scheduler.schedule_rooms.should == [name]
       end
     end
 
@@ -125,12 +155,6 @@ describe HueConference::Scheduler do
 
   describe "#delete_all_schedules" do
 
-    let(:all_schedules) {
-      {
-        "1" => {"name" => "testroom-10101010"},
-        "2" => {"name" => "testroom-10101020"}
-      }
-    }
     let(:scheduler) { HueConference::Scheduler.new(hue_client, rooms) }
 
     before do
@@ -139,9 +163,21 @@ describe HueConference::Scheduler do
     end
 
     it "should delete all hue schedules" do
-      hue_client.should_receive(:delete).with("/schedules/1")
       hue_client.should_receive(:delete).with("/schedules/2")
+      hue_client.should_receive(:delete).with("/schedules/3")
       scheduler.delete_all_schedules
+    end
+  end
+
+  describe "#current_schedule" do
+    let(:scheduler) { HueConference::Scheduler.new(hue_client, rooms) }
+
+    before do
+      scheduler.stub(:all_schedules) { all_schedules }
+    end
+
+    it "should return a current schedule object" do
+      scheduler.current_schedule.should == current_schedule
     end
   end
 end

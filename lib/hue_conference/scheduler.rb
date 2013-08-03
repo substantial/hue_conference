@@ -16,8 +16,23 @@ class HueConference::Scheduler
       if room.has_upcoming_event?
         schedule = HueConference::Schedule.new(room)
 
+        new_schedule = []
         schedule.items.each do |item|
-          response << create_schedule(item)
+          name_array = item.name.split('-')
+          room_name = name_array.first
+          timestamp = name_array.last
+
+          if current_schedule.has_key?(room_name)
+            room_schedule = current_schedule[room_name]
+            if room_scheudle.includes?(timstamp)
+              room_scheule.pop(timestamp)
+            else
+              new_schedule << item
+            end
+          end
+          room_schedule.ids.each(&:method(delete_schedule))
+          new_schedule.each(&:method(create_schedule))
+          #response << create_schedule(item)
         end
       else
         response << "Nothing to schedule"
@@ -25,6 +40,25 @@ class HueConference::Scheduler
     end
 
     response
+  end
+
+  def current_schedule
+    schedule_hash = {}
+
+    all_schedules.each do |id, hash|
+      name_array = hash['name'].split('-')
+      room_name = name_array.first
+      timestamp = name_array.last
+
+      room_hash = { timestamp => id }
+
+      if schedule_hash.has_key?(room_name)
+        schedule_hash[room_name] << room_hash
+      else
+        schedule_hash[room_name] = [room_hash]
+      end
+    end
+    schedule_hash
   end
 
   def all_schedules
@@ -57,11 +91,11 @@ class HueConference::Scheduler
       "time" => schedule.time
     }
     response = @client.post("/schedules", options)
-    puts response.data
+    response.data
   end
 
   def delete(id)
     response = @client.delete("/schedules/#{id}")
-    puts response.data
+    response.data
   end
 end

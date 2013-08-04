@@ -13,29 +13,39 @@ class HueConference::Scheduler
     response = []
 
     @rooms.each do |room|
+      new_schedule = []
+
       if room.has_upcoming_event?
         schedule = HueConference::Schedule.new(room)
 
-        new_schedule = []
-        schedule.items.each do |item|
-          name_array = item.name.split('-')
-          room_name = name_array.first
-          timestamp = name_array.last
+        room_name = room.name
 
-          if current_schedule.has_key?(room_name)
-            room_schedule = current_schedule[room_name]
-            if room_scheudle.includes?(timstamp)
-              room_scheule.pop(timestamp)
+        current_room_schedule = current_schedule[room_name]
+
+        schedule.items.each do |item|
+
+          if current_room_schedule
+            result = current_room_schedule.find do |hash|
+              hash.include?(item.timestamp)
+            end
+
+            if result
+              current_room_schedule.delete(result)
             else
               new_schedule << item
             end
+
+          else
+            new_schedule << item
           end
-          room_schedule.ids.each(&:method(delete_schedule))
-          new_schedule.each(&:method(create_schedule))
-          #response << create_schedule(item)
+
+          response << item.name
         end
+        ids = current_room_schedule.map{ |hash| hash.map{ |k,v| v.to_i} }.flatten
+        ids.each{ |id| delete(id) } unless ids.empty?
+        new_schedule.each{ |schedule| write(schedule) } unless new_schedule.empty?
       else
-        response << "Nothing to schedule"
+        response << "Nothing scheduled for #{room.name}"
       end
     end
 
@@ -74,11 +84,6 @@ class HueConference::Scheduler
   end
 
   private
-
-  def create_schedule(schedule)
-    write(schedule)
-    schedule.name
-  end
 
   def write(schedule)
     options = {

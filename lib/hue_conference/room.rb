@@ -4,12 +4,12 @@ class HueConference::Room
   attr_accessor :lights, :calendar
 
   def initialize(room_config_hash)
-    @name = room_config_hash["name"].downcase.gsub(/\s+/, '_')
+    @name = room_config_hash["name"].downcase.gsub(/\W+/, '')[0, 20]
     @lights = []
   end
 
   def has_upcoming_event?
-    calendar.sync_events!
+    !event.nil?
   end
 
   def turn_on_lights

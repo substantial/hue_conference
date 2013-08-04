@@ -13,33 +13,19 @@ class HueConference::Scheduler
     response = []
 
     @rooms.each do |room|
+      room.calendar.sync_events!
+
       if room.has_upcoming_event?
-        schedule = HueConference::Schedule.new(room)
+        schedule = HueConference::Schedule.new(room, current_schedule[room.name]).build
 
-        new_schedule = []
-        schedule.items.each do |item|
-          name_array = item.name.split('-')
-          room_name = name_array.first
-          timestamp = name_array.last
+        delete_schedules(schedule.old_schedule) if schedule.has_old_items?
 
-          if current_schedule.has_key?(room_name)
-            room_schedule = current_schedule[room_name]
-            if room_scheudle.includes?(timstamp)
-              room_scheule.pop(timestamp)
-            else
-              new_schedule << item
-            end
-          end
-          room_schedule.ids.each(&:method(delete_schedule))
-          new_schedule.each(&:method(create_schedule))
-          #response << create_schedule(item)
-        end
-      else
-        response << "Nothing to schedule"
+        write_schedules(schedule.new_schedule) if schedule.has_new_items?
       end
+
     end
 
-    response
+    "Schedule Created"
   end
 
   def current_schedule
@@ -50,12 +36,12 @@ class HueConference::Scheduler
       room_name = name_array.first
       timestamp = name_array.last
 
-      room_hash = { timestamp => id }
+      room_schedule = OpenStruct.new(id: id, timestamp: timestamp)
 
       if schedule_hash.has_key?(room_name)
-        schedule_hash[room_name] << room_hash
+        schedule_hash[room_name] << room_schedule
       else
-        schedule_hash[room_name] = [room_hash]
+        schedule_hash[room_name] = [room_schedule]
       end
     end
     schedule_hash
@@ -75,11 +61,6 @@ class HueConference::Scheduler
 
   private
 
-  def create_schedule(schedule)
-    write(schedule)
-    schedule.name
-  end
-
   def write(schedule)
     options = {
       "name" => schedule.name,
@@ -97,5 +78,17 @@ class HueConference::Scheduler
   def delete(id)
     response = @client.delete("/schedules/#{id}")
     response.data
+  end
+
+  def write_schedules(schedules)
+    unless schedules.empty?
+      schedules.each{ |schedule| write(schedule) }
+    end
+  end
+
+  def delete_schedules(schedules)
+    unless schedules.empty?
+      schedules.each{ |schedule| delete(schedule) }
+    end
   end
 end

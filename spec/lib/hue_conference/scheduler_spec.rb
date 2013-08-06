@@ -11,10 +11,10 @@ describe HueConference::Scheduler do
       "5" => {"name" => "testroomtwo-10101200"}
     }
   }
-  let(:room_one_starting) { current_room_schedule('10101010', '2') }
-  let(:room_one_ending) { current_room_schedule('10101020', '3') }
-  let(:room_two_starting) { current_room_schedule('10101100', '4') }
-  let(:room_two_ending) { current_room_schedule('10101200', '5') }
+  let(:room_one_starting) { current_schedule_item('10101010', '2') }
+  let(:room_one_ending) { current_schedule_item('10101020', '3') }
+  let(:room_two_starting) { current_schedule_item('10101100', '4') }
+  let(:room_two_ending) { current_schedule_item('10101200', '5') }
 
   let(:current_schedule) {
     {
@@ -55,7 +55,7 @@ describe HueConference::Scheduler do
     context "when a room has an upcoming event" do
 
       context "when the room schedule matches current schedule" do
-        let(:room_schedule) { double(old_schedule?: false, new_schedule?: false, log: double) }
+        let(:schedule) { double(old_schedule?: false, new_schedule?: false, log: double) }
         let(:room) { double(has_upcoming_event?: true, name: 'testroomone') }
         let(:rooms) { [room] }
 
@@ -63,7 +63,7 @@ describe HueConference::Scheduler do
 
         before do
           scheduler.stub(:current_schedule) { current_schedule }
-          HueConference::RoomSchedule.stub_chain(:new, :build) { room_schedule }
+          HueConference::Schedule.stub_chain(:new, :build) { schedule }
         end
 
         it "should not delete a schedule" do
@@ -80,7 +80,7 @@ describe HueConference::Scheduler do
       context "when the room schedule is different from the current schedule" do
         let(:old_schedule) { %w(1 2) }
         let(:new_schedule) { [double.as_null_object] }
-        let(:room_schedule) { double(old_schedule?: true,
+        let(:schedule) { double(old_schedule?: true,
                                      new_schedule?: true,
                                      old_schedule: old_schedule,
                                      new_schedule: new_schedule,
@@ -92,7 +92,7 @@ describe HueConference::Scheduler do
 
         before do
           scheduler.stub(:current_schedule) { current_schedule }
-          HueConference::RoomSchedule.stub_chain(:new, :build) { room_schedule }
+          HueConference::Schedule.stub_chain(:new, :build) { schedule }
         end
 
         it "should delete all current schedules that are different" do
@@ -119,10 +119,6 @@ describe HueConference::Scheduler do
       it "should not write any schedule to the hue" do
         scheduler.should_not_receive(:write)
         scheduler.schedule_rooms
-      end
-
-      it "should return an array of scheduled callbacks" do
-        scheduler.schedule_rooms.should == ['Nothing scheduled for roomname']
       end
     end
   end
@@ -196,7 +192,7 @@ describe HueConference::Scheduler do
     end
   end
 
-  def current_room_schedule(timestamp, id)
+  def current_schedule_item(timestamp, id)
     OpenStruct.new(id: id, timestamp: timestamp)
   end
 end

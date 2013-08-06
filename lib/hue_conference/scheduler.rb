@@ -18,20 +18,16 @@ class HueConference::Scheduler
 
       if room.has_upcoming_event?
         current_room_schedule = current_schedule[room.name]
-        room_schedule = HueConference::RoomSchedule.new(room, current_room_schedule).build
+        schedule = HueConference::Schedule.new(room, current_room_schedule).build
 
-        delete_schedules(room_schedule.old_schedule) if room_schedule.old_schedule?
+        delete_schedules(schedule.old_schedule) if schedule.old_schedule?
 
-        if room_schedule.new_schedule?
-          write_schedules(room_schedule.new_schedule)
-          response << room_schedule.new_schedule.map(&:name)
-        end
+        write_schedules(schedule.new_schedule) if schedule.new_schedule?
       end
 
-      response << "Nothing scheduled for #{room.name}"
     end
 
-    response
+    "Schedule Created"
   end
 
   def current_schedule

@@ -11,10 +11,11 @@ describe HueConference::Scheduler do
       "5" => {"name" => "testroomtwo-10101200"}
     }
   }
-  let(:room_one_starting) { {'10101010' => '2'} }
-  let(:room_one_ending) { {'10101020' => '3'} }
-  let(:room_two_starting) { {'10101100' => '4'} }
-  let(:room_two_ending) { {'10101200' => '5'} }
+  let(:room_one_starting) { current_room_schedule('10101010', '2') }
+  let(:room_one_ending) { current_room_schedule('10101020', '3') }
+  let(:room_two_starting) { current_room_schedule('10101100', '4') }
+  let(:room_two_ending) { current_room_schedule('10101200', '5') }
+
   let(:current_schedule) {
     {
       'testroomone' => [room_one_starting, room_one_ending],
@@ -53,19 +54,21 @@ describe HueConference::Scheduler do
     context "when a room has an upcoming event" do
 
       context "when the room schedule is the same as the current schedule" do
-        let(:room_name) { 'testroomone' }
-        let(:timestamp) { '10101010' }
-        let(:name) { "#{room_name}-#{timestamp}" }
-        let(:item) { double(name: name, timestamp: timestamp) }
-        let(:schedule) { double(items: [item]) }
-        let(:room) { double(has_upcoming_event?: true, schedule: schedule, name: room_name) }
+
+        let(:room_schedule) { double(old_schedule?: false, new_schedule?: false, log: double) }
+        let(:room) { double(has_upcoming_event?: true, name: 'testroomone') }
         let(:rooms) { [room] }
 
         let(:scheduler) { HueConference::Scheduler.new(hue_client, rooms) }
 
         before do
-          HueConference::Schedule.stub(:new) { schedule }
           scheduler.stub(:current_schedule) { current_schedule }
+          HueConference::RoomSchedule.stub(:new) { room_schedule }
+        end
+
+        it "should not delete a schedule" do
+          scheduler.should_not_receive(:write)
+          scheduler.schedule_rooms
         end
 
         it "should not create a schedule" do
@@ -75,45 +78,39 @@ describe HueConference::Scheduler do
       end
 
       context "when the room schedule is different from the current schedule" do
-        let(:room_name) { 'testroomone' }
-        let(:timestamp) { '10101099' }
-        let(:name) { "#{room_name}-#{timestamp}" }
-        let(:item) { double(name: name, timestamp: timestamp) }
-        let(:schedule) { double(items: [item]) }
-        let(:room) { double(has_upcoming_event?: true, schedule: schedule, name: room_name) }
+        let(:old_schedule) { %w(1 2) }
+        let(:new_schedule) { [double.as_null_object] }
+        let(:room_schedule) { double(old_schedule?: true,
+                                     new_schedule?: true,
+                                     old_schedules: old_schedule,
+                                     new_schedules: new_schedule,
+                                     log: 'schedule log') }
+        let(:room) { double(has_upcoming_event?: true, name: 'testroomone') }
         let(:rooms) { [room] }
 
         let(:scheduler) { HueConference::Scheduler.new(hue_client, rooms) }
 
         before do
-          HueConference::Schedule.stub(:new) { schedule }
           scheduler.stub(:current_schedule) { current_schedule }
-        end
-
-        it "should create a new schedule" do
-          scheduler.rooms.each do |room|
-            HueConference::Schedule.should_receive(:new).with(room)
-          end
-          scheduler.schedule_rooms
+          HueConference::RoomSchedule.stub(:new) { room_schedule }
         end
 
         it "should delete all current schedules that are different" do
-          current_schedule[room_name].each do |schedule|
-            id = schedule.values.first.to_i
+          old_schedule.each do |id|
             scheduler.should_receive(:delete).with(id)
           end
           scheduler.schedule_rooms
         end
 
         it "should write each schedule item to the hue" do
-          schedule.items.each do |item|
-            scheduler.should_receive(:write).with(item)
+          new_schedule.each do |schedule|
+            scheduler.should_receive(:write).with(schedule)
           end
           scheduler.schedule_rooms
         end
 
         it "should return an array of scheduled items" do
-          scheduler.schedule_rooms.should == [name]
+          scheduler.schedule_rooms.should == ['schedule log']
         end
       end
     end
@@ -202,4 +199,9 @@ describe HueConference::Scheduler do
       scheduler.current_schedule.should == current_schedule
     end
   end
+
+  def current_room_schedule(timestamp, id)
+    OpenStruct.new(id: id, timestamp: timestamp)
+  end
+
 end

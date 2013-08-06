@@ -2,12 +2,16 @@ require 'spec_helper'
 
 describe "HueConference::Room" do
 
-  let(:room_config_hash) { { 'name' => "Test Room" } }
+  let(:room_config_hash) { { 'name' => "Test Room - Over 20 Characters Long" } }
   let(:room) { HueConference::Room.new(room_config_hash) }
 
   describe "#initialize" do
+    it "should require a room config hash" do
+      expect { HueConference::Room.new }.to raise_error ArgumentError
+    end
+
     it "should have formatted name" do
-      room.name.should == 'test_room'
+      room.name.should == 'testroomover20charac'
     end
 
     it "should have a light" do

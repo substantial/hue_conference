@@ -25,6 +25,8 @@ class HueConference::Schedule
 
       @old_schedule = @current_schedule.map(&:id).flatten if @current_schedule
     end
+
+    self
   end
 
   def has_new_items?

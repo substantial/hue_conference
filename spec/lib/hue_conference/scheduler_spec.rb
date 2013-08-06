@@ -55,7 +55,8 @@ describe HueConference::Scheduler do
     context "when a room has an upcoming event" do
 
       context "when the room schedule matches current schedule" do
-        let(:schedule) { double(old_schedule?: false, new_schedule?: false, log: double) }
+        let(:schedule) { double(has_old_items?: false,
+                                has_new_items?: false) }
         let(:room) { double(has_upcoming_event?: true, name: 'testroomone') }
         let(:rooms) { [room] }
 
@@ -80,11 +81,11 @@ describe HueConference::Scheduler do
       context "when the room schedule is different from the current schedule" do
         let(:old_schedule) { %w(1 2) }
         let(:new_schedule) { [double.as_null_object] }
-        let(:schedule) { double(old_schedule?: true,
-                                     new_schedule?: true,
-                                     old_schedule: old_schedule,
-                                     new_schedule: new_schedule,
-                                     log: 'schedule log') }
+        let(:schedule) { double(has_old_items?: true,
+                                has_new_items?: true,
+                                old_schedule: old_schedule,
+                                new_schedule: new_schedule,
+                                log: 'schedule log') }
         let(:room) { double(has_upcoming_event?: true, name: 'testroomone') }
         let(:rooms) { [room] }
 

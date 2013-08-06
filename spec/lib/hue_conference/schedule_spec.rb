@@ -3,6 +3,7 @@ require 'spec_helper'
 describe HueConference::Schedule do
 
   describe "#initialize" do
+
     let(:current_schedule) { double }
     let(:callback) {
       OpenStruct.new({
@@ -56,6 +57,7 @@ describe HueConference::Schedule do
   end
 
   describe "#build" do
+
     context "when there is a current schedule for the room" do
 
       context "and the scheduled event is in the current schedule" do
@@ -81,6 +83,10 @@ describe HueConference::Schedule do
         it "should remove the schedule from the current_schedule queue" do
           schedule.build
           schedule.current_schedule.should == []
+        end
+
+        it "should return the schedule" do
+          schedule.build.should == schedule
         end
       end
 

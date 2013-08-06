@@ -1,4 +1,3 @@
-require 'ostruct'
 require 'ruhue'
 
 class HueConference::Scheduler
@@ -17,12 +16,11 @@ class HueConference::Scheduler
       room.calendar.sync_events!
 
       if room.has_upcoming_event?
-        current_room_schedule = current_schedule[room.name]
-        schedule = HueConference::Schedule.new(room, current_room_schedule).build
+        schedule = HueConference::Schedule.new(room, current_schedule[room.name]).build
 
-        delete_schedules(schedule.old_schedule) if schedule.old_schedule?
+        delete_schedules(schedule.old_schedule) if schedule.has_old_items?
 
-        write_schedules(schedule.new_schedule) if schedule.new_schedule?
+        write_schedules(schedule.new_schedule) if schedule.has_new_items?
       end
 
     end

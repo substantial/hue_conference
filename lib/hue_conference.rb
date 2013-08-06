@@ -30,7 +30,7 @@ module HueConference
       @rooms = HueConference::RoomBuilder.new(config['rooms'], light_manifest, google_agent).build
     end
 
-    def create_schedule
+    def update_schedule
       scheduler.schedule_rooms
     end
 

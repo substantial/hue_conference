@@ -2,8 +2,6 @@ require 'hue_conference/light_options'
 
 module HueConference
 
-  class FloatOutOfRange < Exception; end
-
   class Light
     include LightOptions
     attr_reader :name, :id

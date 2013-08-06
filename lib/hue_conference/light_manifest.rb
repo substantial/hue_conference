@@ -16,8 +16,6 @@ class HueConference::LightManifest
     lights_hash.each_pair do |light_id, light_properties|
       light = HueConference::Light.new(light_id, light_properties)
       light.client = @client
-      light.reset!
-      light.off!
       light.sync!
       @lights << light
     end

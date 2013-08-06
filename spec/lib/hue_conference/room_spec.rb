@@ -25,16 +25,13 @@ describe "HueConference::Room" do
 
   describe "#has_upcoming_event?" do
 
-    let(:calendar) { double(sync_events!: true) }
-
     before do
-      HueConference::Calendar.stub(:new) { calendar }
-      room.calendar = calendar
+      HueConference::Calendar.stub(:new) { double }
+      room.stub(:event) { double }
     end
 
-    it "should sync the calendar" do
-      calendar.should_receive(:sync_events!)
-      room.has_upcoming_event?
+    it "should return true if there is an upcoming event" do
+      room.has_upcoming_event?.should == true
     end
   end
 

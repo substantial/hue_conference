@@ -9,7 +9,7 @@ class HueConference::Room
   end
 
   def has_upcoming_event?
-    calendar.sync_events!
+    !event.nil?
   end
 
   def turn_on_lights

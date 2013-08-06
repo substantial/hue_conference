@@ -1,39 +1,47 @@
 class HueConference::RoomSchedule
 
-  def initialize(room, current_schedule)
+  attr_reader :current_schedule, :schedule, :new_schedule, :old_schedule
 
+  def initialize(room, current_schedule)
+    @current_schedule = current_schedule
+    @schedule = HueConference::Schedule.new(room)
+    @new_schedule = []
+    @old_schedule = []
   end
 
+  def build
+    @schedule.items.each do |item|
 
- # def build
- #   schedule = HueConference::Schedule.new(room)
+      if @current_schedule
+        found = find_in_current_schedule(item)
+        found ? @current_schedule.delete(found) : @new_schedule << item
+      else
+        @new_schedule << item
+      end
 
+      @old_schedule = @current_schedule.map(&:id).flatten if @current_schedule
+    end
 
- #   room_name = room.name
+    self
+  end
 
- #   #current_room_schedule = current_schedule[room_name]
+  def new_schedule?
+    @new_schedule.any?
+  end
 
- #   schedule.items.each do |item|
+  def old_schedule?
+    @old_schedule.any?
+  end
 
- #     if current_room_schedule
- #       result = current_room_schedule.find do |hash|
- #         hash.include?(item.timestamp)
- #       end
+  private
 
- #       if result
- #         current_room_schedule.delete(result)
- #       else
- #         new_schedule << item
- #       end
+  def create_schedule(item)
+    @new_schedule << item
+  end
 
- #     else
- #       new_schedule << item
- #     end
-
- #     response << item.name
- #   end
-
- #   ids = current_room_schedule.map{ |hash| hash.map{ |k,v| v.to_i} }.flatten
-
- # end
+  def find_in_current_schedule(item)
+    @current_schedule.find do |schedule|
+      schedule.timestamp == item.timestamp
+    end
+  end
 end

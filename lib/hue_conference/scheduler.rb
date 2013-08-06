@@ -14,16 +14,21 @@ class HueConference::Scheduler
     response = []
 
     @rooms.each do |room|
+      room.calendar.sync_events!
+
       if room.has_upcoming_event?
         current_room_schedule = current_schedule[room.name]
-        room_schedule = HueConference::RoomSchedule.new(room, current_room_schedule)
+        room_schedule = HueConference::RoomSchedule.new(room, current_room_schedule).build
 
-        delete_schedules(room_schedule.old_schedules) if room_schedule.old_schedule?
-        write_schedules(room_schedule.new_schedules) if room_schedule.new_schedule?
-        response << room_schedule.log
-      else
-        response << "Nothing scheduled for #{room.name}"
+        delete_schedules(room_schedule.old_schedule) if room_schedule.old_schedule?
+
+        if room_schedule.new_schedule?
+          write_schedules(room_schedule.new_schedule)
+          response << room_schedule.new_schedule.map(&:name)
+        end
       end
+
+      response << "Nothing scheduled for #{room.name}"
     end
 
     response
@@ -37,7 +42,7 @@ class HueConference::Scheduler
       room_name = name_array.first
       timestamp = name_array.last
 
-      room_schedule = Struct.new(id: id, timestamp: timestamp)
+      room_schedule = OpenStruct.new(id: id, timestamp: timestamp)
 
       if schedule_hash.has_key?(room_name)
         schedule_hash[room_name] << room_schedule

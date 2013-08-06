@@ -7,6 +7,7 @@ require "hue_conference/event"
 require "hue_conference/room_builder"
 require "hue_conference/scheduler"
 require "hue_conference/schedule"
+require "hue_conference/room_schedule"
 
 require "google-api-middle_man"
 require "color"

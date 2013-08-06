@@ -2,86 +2,157 @@ require 'spec_helper'
 
 describe HueConference::RoomSchedule do
 
-  context "when a room has an upcoming event" do
+  describe "#initialize" do
+    let(:schedule) { double }
+    let(:current_schedule) { double }
+    let(:room) { double }
 
-    context "when the room schedule is the same as the current schedule" do
-      let(:room_name) { 'testroomone' }
-      let(:timestamp) { '10101010' }
-      let(:name) { "#{room_name}-#{timestamp}" }
-      let(:item) { double(name: name, timestamp: timestamp) }
-      let(:schedule) { double(items: [item]) }
-      let(:room) { double(has_upcoming_event?: true, schedule: schedule, name: room_name) }
-      let(:rooms) { [room] }
+    let(:room_schedule) { HueConference::RoomSchedule.new(room, current_schedule) }
 
-      let(:scheduler) { HueConference::Scheduler.new(hue_client, rooms) }
-
-      before do
-        HueConference::Schedule.stub(:new) { schedule }
-        scheduler.stub(:current_schedule) { current_schedule }
-      end
-
-      it "should not create a schedule" do
-        scheduler.should_not_receive(:write)
-        scheduler.schedule_rooms
-      end
+    before do
+      HueConference::Schedule.stub(:new) { schedule }
     end
 
-    context "when the room schedule is different from the current schedule" do
-      let(:room_name) { 'testroomone' }
-      let(:timestamp) { '10101099' }
-      let(:name) { "#{room_name}-#{timestamp}" }
-      let(:item) { double(name: name, timestamp: timestamp) }
-      let(:schedule) { double(items: [item]) }
-      let(:room) { double(has_upcoming_event?: true, schedule: schedule, name: room_name) }
-      let(:rooms) { [room] }
+    it "should require a room" do
+      expect { HueConference::RoomSchedule.new }.to raise_error ArgumentError
+    end
 
-      let(:scheduler) { HueConference::Scheduler.new(hue_client, rooms) }
+    it "should require a current_schedule" do
+      expect { HueConference::RoomSchedule.new(room) }.to raise_error ArgumentError
+    end
+
+    it "should have a current schedule" do
+      room_schedule.current_schedule.should == current_schedule
+    end
+
+    it "should create a schedule" do
+      HueConference::Schedule.should_receive(:new).with(room)
+      room_schedule
+    end
+
+    it "should have a schedule" do
+      room_schedule.schedule.should == schedule
+    end
+
+    it "should have a new schedule array" do
+      room_schedule.new_schedule.should == []
+    end
+
+    it "should have an old schedule array" do
+      room_schedule.old_schedule.should == []
+    end
+  end
+
+  describe "#build" do
+    context "when there is a current schedule for the room" do
+
+      context "and the scheduled event is in the current schedule" do
+        let(:timestamp) { '10101010' }
+        let(:item) { double(timestamp: timestamp) }
+        let(:schedule) { double(items: [item]) }
+        let(:new_schedule) { [item] }
+        let(:current_scheduled_event) { OpenStruct.new(id: 2, timestamp: timestamp) }
+        let(:current_schedule) { [current_scheduled_event] }
+        let(:room) { double }
+
+        let(:room_schedule) { HueConference::RoomSchedule.new(room, current_schedule) }
+
+        before do
+          HueConference::Schedule.stub(:new) { schedule }
+        end
+
+        it "should not create a new schedule" do
+          room_schedule.build
+          room_schedule.new_schedule.should == []
+        end
+
+        it "should remove the schedule from the current_schedule queue" do
+          room_schedule.build
+          room_schedule.current_schedule.should == []
+        end
+      end
+
+      context "and the scheduled event is not in the current schedule" do
+        let(:old_schedule) { [2] }
+        let(:item) { double(timestamp: '20202020') }
+        let(:schedule) { double(items: [item]) }
+        let(:new_schedule) { [item] }
+        let(:current_scheduled_event) { OpenStruct.new(id: 2, timestamp: '10101010') }
+        let(:current_schedule) { [current_scheduled_event] }
+        let(:room) { double }
+
+        let(:room_schedule) { HueConference::RoomSchedule.new(room, current_schedule) }
+
+        before do
+          HueConference::Schedule.stub(:new) { schedule }
+        end
+
+        it "should create a new schedule" do
+          room_schedule.build
+          room_schedule.new_schedule.should == new_schedule
+        end
+
+        it "should add the scheduled event to the old schedule array" do
+          room_schedule.build
+          room_schedule.old_schedule.should == old_schedule
+        end
+      end
+
+    end
+
+    context "when there is no current room schedule" do
+      let(:new_schedule) { [item] }
+      let(:item) { double('schedule item') }
+      let(:schedule) { double(items: [item]) }
+      let(:current_schedule) { [] }
+      let(:room) { double }
+
+      let(:room_schedule) { HueConference::RoomSchedule.new(room, current_schedule) }
 
       before do
         HueConference::Schedule.stub(:new) { schedule }
-        scheduler.stub(:current_schedule) { current_schedule }
       end
 
       it "should create a new schedule" do
-        scheduler.rooms.each do |room|
-          HueConference::Schedule.should_receive(:new).with(room)
-        end
-        scheduler.schedule_rooms
-      end
-
-      it "should delete all current schedules that are different" do
-        current_schedule[room_name].each do |schedule|
-          id = schedule.values.first.to_i
-          scheduler.should_receive(:delete).with(id)
-        end
-        scheduler.schedule_rooms
-      end
-
-      it "should write each schedule item to the hue" do
-        schedule.items.each do |item|
-          scheduler.should_receive(:write).with(item)
-        end
-        scheduler.schedule_rooms
-      end
-
-      it "should return an array of scheduled items" do
-        scheduler.schedule_rooms.should == [name]
+        room_schedule.build
+        room_schedule.new_schedule.should == new_schedule
       end
     end
   end
 
-  context "when a room has no upcoming events" do
-    let(:room) { double(has_upcoming_event?: false, name: 'roomname') }
+  describe "#new_schedule?" do
+    let(:room_schedule) { HueConference::RoomSchedule.new(double, double) }
 
-    let(:scheduler) { HueConference::Scheduler.new(hue_client, [room]) }
-
-    it "should not write any schedule to the hue" do
-      scheduler.should_not_receive(:write)
-      scheduler.schedule_rooms
+    before do
+      HueConference::Schedule.stub(:new) { double }
     end
 
-    it "should return an array of scheduled callbacks" do
-      scheduler.schedule_rooms.should == ['Nothing scheduled for roomname']
+    it "should be true if there are new schedules" do
+      room_schedule.instance_variable_set(:@new_schedule, [double])
+      room_schedule.new_schedule?.should == true
+    end
+
+    it "should be true when there are no new schedules" do
+      room_schedule.instance_variable_set(:@new_schedule, [])
+      room_schedule.new_schedule?.should == false
+    end
+  end
+
+  describe "#old_schedule?" do
+    let(:room_schedule) { HueConference::RoomSchedule.new(double, double) }
+
+    before do
+      HueConference::Schedule.stub(:new) { double }
+    end
+
+    it "should be true if there are old schedules" do
+      room_schedule.instance_variable_set(:@old_schedule, [double])
+      room_schedule.old_schedule?.should == true
+    end
+
+    it "should be true when there are no old schedules" do
+      room_schedule.instance_variable_set(:@old_schedule, [])
+      room_schedule.old_schedule?.should == false
     end
   end
 end

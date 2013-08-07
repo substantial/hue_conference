@@ -47,7 +47,7 @@ module HueConference
         type: 'starting',
         light:'outdoor',
         time: @starting_time,
-        command: HueConference::Attribute.on(true).merge(HueConference::Attribute.color(Color::RGB::Tomato))
+        command: HueConference::Attribute.multiple(on: true, color: Color::RGB::Tomato)
       }
     end
 
@@ -65,7 +65,7 @@ module HueConference
         type: 'ending',
         light: 'outdoor',
         time: @ending_time,
-        command: HueConference::Attribute.on(false).merge(HueConference::Attribute.color(Color::RGB::Green))
+        command: HueConference::Attribute.color(Color::RGB::Green)
       }
     end
   end

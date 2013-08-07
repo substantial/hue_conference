@@ -29,12 +29,12 @@ describe "HueConference::Light" do
     end
 
     it "should turn on the light" do
-      light.should_receive(:update_state).with(on: true)
+      light.should_receive(:write_state).with(on: true)
       light.on!
     end
 
     it "should turn off the light" do
-      light.should_receive(:update_state).with(on: false)
+      light.should_receive(:write_state).with(on: false)
       light.off!
     end
   end
@@ -116,13 +116,17 @@ describe "HueConference::Light" do
       {
         on: true,
         hue: 0,
-        saturation: 0,
-        brightness: 0.5,
+        sat: 0,
+        bri: 128,
       }
     }
 
+    before do
+      light.stub(:write_state)
+    end
+
     it "should reset the lights to white" do
-      light.should_receive(:update_state).with(reset_state)
+      light.should_receive(:write_state).with(reset_state)
       light.reset!
     end
   end
@@ -153,35 +157,6 @@ describe "HueConference::Light" do
       light.should_receive(:off!)
       light.should_not_receive(:on!)
       light.toggle
-    end
-  end
-
-  describe "update_state" do
-    let(:result_array) {
-      [
-        {"success"=>{"/lights/2/state/on"=>true}},
-        {"success"=>{"/lights/2/state/hue"=>500}},
-        {"success"=>{"/lights/2/state/bri"=>98}}
-      ]
-    }
-    let(:response) { double(data: result_array) }
-
-    before do
-      mock_client.stub(put: response)
-    end
-
-    it "should update properties in the result array" do
-      light.client = mock_client
-      light.send(:update_state)
-      light.instance_variable_get(:@on).should == true
-      light.instance_variable_get(:@hue).should == 500
-      light.instance_variable_get(:@bri).should == 98
-    end
-  end
-
-  describe "validate_factor" do
-    xit "should only allow a float for 0.0 to 1.0" do
-      expect { light.send(:validate_factor, 1.1) }.to raise_error HueConference::FloatOutOfRange, "Number must be between 0.0 to 1.0"
     end
   end
 
@@ -265,37 +240,6 @@ describe "HueConference::Light" do
     it "should set the transition time" do
       light.should_receive(:write_state).with(transitiontime: 10)
       light.transition!(1)
-    end
-  end
-
-  describe "#update_state" do
-    before do
-      light.stub(:write_state)
-      light.stub(brightness: {bri: 'foo'})
-      light.stub(color: {hue: 'red', bri: 'bar'})
-      light.stub(on: {on: true})
-    end
-
-    it "should convert each state property" do
-      light.should_receive(:brightness).with(1.0)
-      light.should_receive(:color).with('red')
-      light.should_receive(:on).with(true)
-
-      light.update_state(brightness: 1.0, on: true, color: 'red')
-    end
-
-    it "should set the state from the built up the request" do
-      converted_hash = { hue: 'red', on: true, bri: 'bar'  }
-      light.should_receive(:write_state).with(converted_hash)
-
-      light.update_state(on: true, color: 'red')
-    end
-
-    it "should choose explicit brightness over color" do
-      converted_hash = { hue: 'red', on: true, bri: 'foo'  }
-      light.should_receive(:write_state).with(converted_hash)
-
-      light.update_state(brightness: 1.0, on: true, color: 'red')
     end
   end
 end

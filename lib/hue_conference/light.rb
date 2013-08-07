@@ -34,7 +34,7 @@ module HueConference
         saturation: 0,
         brightness: 0.5,
       }
-      update_state(reset_state)
+      write_state(HueConference::Attribute.multiple(reset_state))
     end
 
     def debug
@@ -73,21 +73,6 @@ module HueConference
 
     def transition!(seconds)
       write_state(HueConference::Attribute.transitiontime(seconds))
-    end
-
-    def update_state(new_state = {})
-      options = {}
-
-      if new_state.has_key?(:color)
-        color_state = new_state.delete(:color)
-        options.merge!(self.send(:color, color_state))
-      end
-
-      new_state.keys.each do |key|
-        options.merge!(self.send(key, new_state[key]))
-      end
-
-      write_state(options)
     end
 
     private

@@ -54,5 +54,20 @@ module HueConference
       time = (seconds * 10)
       { transitiontime: time }
     end
+
+    def self.multiple(new_state = {})
+      options = {}
+
+      if new_state.has_key?(:color)
+        color_state = new_state.delete(:color)
+        options.merge!(self.send(:color, color_state))
+      end
+
+      new_state.keys.each do |key|
+        options.merge!(self.send(key, new_state[key]))
+      end
+
+      options
+    end
   end
 end

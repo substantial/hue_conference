@@ -45,8 +45,8 @@ describe HueConference::Schedule do
 
     it "should build an array of schedule items from callbacks" do
       item = OpenStruct.new(
-        timestamp: '10101010',
-        name: 'testroom-10101010',
+        timestamp: '1010101000',
+        name: 'testroom-1010101000',
         light_id: 1,
         command: { 'on' => true },
         time: '2010-10-10T10:10:00-07:00'

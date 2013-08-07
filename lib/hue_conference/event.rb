@@ -21,7 +21,7 @@ module HueConference
     end
 
     def finished?
-      @ending_time >= Time.now.utc
+      @ending_time < Time.now.utc
     end
 
     def underway?

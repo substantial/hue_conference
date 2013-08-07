@@ -36,6 +36,10 @@ module HueConference
       end
     end
 
+    def event_callbacks
+      current_events.map(&:callbacks).flatten
+    end
+
     private
 
     def find_event(type)

@@ -1,8 +1,5 @@
-require 'hue_conference/light_options'
-
 module HueConference
   class Event
-    include LightOptions
 
     attr_reader :starting_time, :ending_time, :name, :callbacks
 
@@ -50,7 +47,7 @@ module HueConference
         type: 'starting',
         light:'outdoor',
         time: @starting_time,
-        command: (on(true).merge(color(Color::RGB::Tomato)))
+        command: HueConference::Attribute.on(true).merge(HueConference::Attribute.color(Color::RGB::Tomato))
       }
     end
 

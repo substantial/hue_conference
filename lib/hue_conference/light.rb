@@ -1,9 +1,6 @@
-require 'hue_conference/light_options'
-
 module HueConference
 
   class Light
-    include LightOptions
     attr_reader :name, :id
     attr_accessor :client, :location
 
@@ -15,11 +12,11 @@ module HueConference
     end
 
     def on!
-      update_state(on(true))
+      write_state(HueConference::Attribute.on(true))
     end
 
     def off!
-      update_state(on(false))
+      write_state(HueConference::Attribute.on(false))
     end
 
     def sync!
@@ -49,19 +46,33 @@ module HueConference
     end
 
     def color!(new_color)
-      write_state(color(new_color))
+      write_state(HueConference::Attribute.color(new_color))
     end
 
     def hue!(new_hue)
-      write_state(hue(new_hue))
+      write_state(HueConference::Attribute.hue(new_hue))
     end
 
     def brightness!(factor)
-      write_state(brightness(factor))
+      write_state(HueConference::Attribute.brightness(factor))
     end
 
     def saturation!(factor)
-      write_state(saturation(factor))
+      write_state(HueConference::Attribute.saturation(factor))
+    end
+
+    def blink!(new_state)
+      state = new_state ? 'lselect' : 'none'
+      write_state(HueConference::Attribute.alert(state))
+    end
+
+    def colorloop!(new_state)
+      state = new_state ? 'colorloop' : 'none'
+      write_state(HueConference::Attribute.effect(state))
+    end
+
+    def transition!(seconds)
+      write_state(HueConference::Attribute.transitiontime(seconds))
     end
 
     def update_state(new_state = {})

@@ -28,8 +28,12 @@ module HueConference
       return true
     end
 
-    def current_event
-      event_underway || next_starting_event
+    def current_events
+      if event_underway
+        [event_underway, next_starting_event]
+      else
+        [next_starting_event]
+      end
     end
 
     private

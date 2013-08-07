@@ -9,7 +9,7 @@ class HueConference::Schedule
     @new_schedule = []
     @old_schedule = []
 
-    room.event.callbacks.map do |callback|
+    room.callbacks.map do |callback|
       @items << build_schedule_item(callback)
     end
   end

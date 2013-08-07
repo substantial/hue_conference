@@ -18,7 +18,7 @@ describe "HueConference::Event" do
         type: 'starting',
         light: 'outdoor',
         time: starting_time,
-        command: { 'on' => true }
+        command: { on: true }
       })
     }
 
@@ -27,7 +27,7 @@ describe "HueConference::Event" do
         type: 'ending',
         light: 'outdoor',
         time: ending_time,
-        command: { 'on' => false }
+        command: { on: false }
       })
     }
     let(:callbacks) { [starting_callback, ending_callback] }
@@ -47,7 +47,7 @@ describe "HueConference::Event" do
     end
 
     it "should set the callbacks for event" do
-      event.callbacks.should == callbacks
+      event.callbacks.size == 3
     end
   end
 

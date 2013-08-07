@@ -1,12 +1,9 @@
-require 'hue_conference/light_options'
-
 module HueConference
   class Event
-    include LightOptions
 
     attr_reader :starting_time, :ending_time, :name, :callbacks
 
-    DEFAULT_CALLBACKS = %w(starting ending)
+    DEFAULT_CALLBACKS = %w(starting finishing ending)
 
     def initialize(google_events_response)
       @name = google_events_response.summary.downcase.gsub(/\s/, '_')
@@ -43,14 +40,21 @@ module HueConference
       Time.parse(date.to_s).utc
     end
 
-    private
-
     def starting
       {
         type: 'starting',
         light:'outdoor',
         time: @starting_time,
-        command: on(true).stringify_keys!
+        command: HueConference::Attribute.multiple(on: true, color: Color::RGB::Tomato)
+      }
+    end
+
+    def finishing
+      {
+        type: 'ending',
+        light: 'outdoor',
+        time: @ending_time - 25,
+        command: HueConference::Attribute.alert('lselect')
       }
     end
 
@@ -58,8 +62,8 @@ module HueConference
       {
         type: 'ending',
         light: 'outdoor',
-        time: @ending_time,
-        command: { 'on' => false }
+        time: @ending_time - 5,
+        command: HueConference::Attribute.color(Color::RGB::Green)
       }
     end
   end

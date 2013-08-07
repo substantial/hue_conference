@@ -5,13 +5,13 @@ require "color"
 require "hue_conference/version"
 require "hue_conference/room"
 require "hue_conference/light"
-require "hue_conference/light_options"
 require "hue_conference/light_manifest"
 require "hue_conference/calendar"
 require "hue_conference/event"
 require "hue_conference/room_builder"
 require "hue_conference/scheduler"
 require "hue_conference/schedule"
+require "hue_conference/attribute"
 
 module HueConference
 

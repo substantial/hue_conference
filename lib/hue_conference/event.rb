@@ -55,8 +55,8 @@ module HueConference
       {
         type: 'ending',
         light: 'outdoor',
-        time: @ending_time - 90,
-        command: (on(true).merge(color(Color::RGB::Yellow)))
+        time: @ending_time - 30,
+        command: HueConference::Attribute.alert('lselect')
       }
     end
 
@@ -64,8 +64,8 @@ module HueConference
       {
         type: 'ending',
         light: 'outdoor',
-        time: @ending_time - 60,
-        command: on(false)
+        time: @ending_time,
+        command: HueConference::Attribute.on(false).merge(HueConference::Attribute.color(Color::RGB::Green))
       }
     end
   end

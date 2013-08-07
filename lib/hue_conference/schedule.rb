@@ -42,7 +42,7 @@ class HueConference::Schedule
   def build_schedule_item(callback)
     item = OpenStruct.new
 
-    item.timestamp = callback.time.strftime("%m%d%H%M")
+    item.timestamp = callback.time.strftime("%m%d%H%M%S")
     item.name = "#{@room.name}-#{item.timestamp}"
     item.light_id = @room.find_light(callback.light).id
     item.command = callback.command

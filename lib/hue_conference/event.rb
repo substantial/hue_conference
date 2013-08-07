@@ -6,7 +6,7 @@ module HueConference
 
     attr_reader :starting_time, :ending_time, :name, :callbacks
 
-    DEFAULT_CALLBACKS = %w(starting ending)
+    DEFAULT_CALLBACKS = %w(starting finishing ending)
 
     def initialize(google_events_response)
       @name = google_events_response.summary.downcase.gsub(/\s/, '_')
@@ -50,7 +50,16 @@ module HueConference
         type: 'starting',
         light:'outdoor',
         time: @starting_time,
-        command: on(true).stringify_keys!
+        command: (on(true).merge(color(Color::RGB::Tomato)))
+      }
+    end
+
+    def finishing
+      {
+        type: 'ending',
+        light: 'outdoor',
+        time: @ending_time - 90,
+        command: (on(true).merge(color(Color::RGB::Yellow)))
       }
     end
 
@@ -58,8 +67,8 @@ module HueConference
       {
         type: 'ending',
         light: 'outdoor',
-        time: @ending_time,
-        command: { 'on' => false }
+        time: @ending_time - 60,
+        command: on(false)
       }
     end
   end

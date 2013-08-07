@@ -3,6 +3,7 @@ module HueConference
   class FloatOutOfRange < Exception; end
 
   module LightOptions
+
     MAX_BRIGHTNESS = 255
     MAX_SATURATION = 255
     MAX_HUE = 65536

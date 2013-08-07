@@ -9,7 +9,7 @@ class HueConference::Room
   end
 
   def has_upcoming_event?
-    !event.nil?
+    !calendar_events.nil?
   end
 
   def turn_on_lights
@@ -26,8 +26,8 @@ class HueConference::Room
     end.first
   end
 
-  def event
-    calendar.current_events.map(&:callbacks)
+  def calendar_events
+    calendar.event_callbacks
   end
 end
 

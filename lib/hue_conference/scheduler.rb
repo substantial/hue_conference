@@ -2,8 +2,6 @@ require 'ruhue'
 
 class HueConference::Scheduler
 
-  attr_reader :client, :rooms
-
   def initialize(client, rooms)
     @client = client
     @rooms = rooms
@@ -14,7 +12,9 @@ class HueConference::Scheduler
       room.calendar.sync_events!
 
       if room.has_upcoming_event?
-        schedule = HueConference::Schedule.new(room, current_schedule[room.name]).build
+        schedule = HueConference::Schedule.new(room)
+
+        schedule.sync_with_current_schedule(current_schedule[room.name])
 
         delete_schedules(schedule.old_schedule) if schedule.has_old_items?
 
@@ -68,8 +68,7 @@ class HueConference::Scheduler
       },
       "time" => schedule.time
     }
-    response = @client.post("/schedules", options)
-    puts response.data
+    @client.post("/schedules", options)
   end
 
   def delete(id)

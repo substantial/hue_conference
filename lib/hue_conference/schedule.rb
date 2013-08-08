@@ -1,32 +1,30 @@
 class HueConference::Schedule
 
-  attr_reader :room, :current_schedule, :items, :new_schedule, :old_schedule
+  attr_reader :new_schedule, :old_schedule
 
-  def initialize(room, current_schedule)
+  def initialize(room)
     @room = room
-    @current_schedule = current_schedule
     @items = []
-    @new_schedule = []
-    @old_schedule = []
 
     room.calendar.event_callbacks.each do |callback|
-      @items << build_schedule_item(callback)
+      @items << build_schedule_item(callback) unless time_is_in_past(callback.time)
     end
   end
 
-  def build
-    @items.each do |item|
-      if @current_schedule
-        found = find_in_current_schedule(item)
-        found ? @current_schedule.delete(found) : @new_schedule << item
-      else
-        @new_schedule << item
-      end
+  def sync_with_current_schedule(current_schedule)
+    @new_schedule = []
+    @old_schedule = []
 
-      @old_schedule = @current_schedule.map(&:id).flatten if @current_schedule
+    @items.each do |item|
+      if current_schedule
+        found = current_schedule.find{ |s| s.timestamp == item.timestamp }
+        found ? current_schedule.delete(found) : create_new_schedule_item(item)
+      else
+        create_new_schedule_item(item)
+      end
     end
 
-    self
+    @old_schedule = current_schedule.map(&:id).flatten if current_schedule
   end
 
   def has_new_items?
@@ -42,7 +40,7 @@ class HueConference::Schedule
   def build_schedule_item(callback)
     item = OpenStruct.new
 
-    item.timestamp = callback.time.strftime("%m%d%H%M%S")
+    item.timestamp = Digest::MD5.hexdigest("#{callback.time}#{callback.type}")[0..15]
     item.name = "#{@room.name}-#{item.timestamp}"
     item.light_id = @room.find_light(callback.light).id
     item.command = callback.command
@@ -51,13 +49,11 @@ class HueConference::Schedule
     item
   end
 
-  def create_schedule(item)
+  def create_new_schedule_item(item)
     @new_schedule << item
   end
 
-  def find_in_current_schedule(item)
-    @current_schedule.find do |schedule|
-      schedule.timestamp == item.timestamp
-    end
+  def time_is_in_past(time)
+    time <= Time.now
   end
 end

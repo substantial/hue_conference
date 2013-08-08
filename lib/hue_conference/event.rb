@@ -40,8 +40,6 @@ module HueConference
       Time.parse(date.to_s).utc
     end
 
-    private
-
     def starting
       {
         type: 'starting',
@@ -55,7 +53,7 @@ module HueConference
       {
         type: 'ending',
         light: 'outdoor',
-        time: @ending_time - 30,
+        time: @ending_time - 25,
         command: HueConference::Attribute.alert('lselect')
       }
     end
@@ -64,7 +62,7 @@ module HueConference
       {
         type: 'ending',
         light: 'outdoor',
-        time: @ending_time,
+        time: @ending_time - 5,
         command: HueConference::Attribute.color(Color::RGB::Green)
       }
     end

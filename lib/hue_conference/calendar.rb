@@ -29,17 +29,12 @@ module HueConference
     end
 
     def current_events
-      if event_underway
-        if next_starting_event
-          [event_underway, next_starting_event]
-        else
-          [event_underway]
-        end
-      elsif next_starting_event
-        [next_starting_event]
-      else
-        []
-      end
+      things = []
+      current_event = events.first
+      next_event = events[1]
+      things << current_event if current_event
+      things << next_event if next_event
+      things
     end
 
     def event_callbacks
@@ -52,12 +47,12 @@ module HueConference
       @events.find { |event| event.send(type) }
     end
 
-    def event_underway
-      find_event(:underway?)
-    end
-
-    def next_starting_event
-      find_event(:unstarted?)
-    end
+#    def current_event
+#      find_event(:underway?)
+#    end
+#
+#    def next_event
+#      find_event(:unstarted?)
+#    end
   end
 end

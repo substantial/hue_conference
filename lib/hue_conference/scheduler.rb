@@ -10,8 +10,6 @@ class HueConference::Scheduler
   end
 
   def schedule_rooms
-    response = []
-
     @rooms.each do |room|
       room.calendar.sync_events!
 
@@ -22,10 +20,9 @@ class HueConference::Scheduler
 
         write_schedules(schedule.new_schedule) if schedule.has_new_items?
       end
-
     end
 
-    "Schedule Created"
+    'Schedule Updated'
   end
 
   def current_schedule
@@ -72,12 +69,11 @@ class HueConference::Scheduler
       "time" => schedule.time
     }
     response = @client.post("/schedules", options)
-    response.data
+    puts response.data
   end
 
   def delete(id)
-    response = @client.delete("/schedules/#{id}")
-    response.data
+    @client.delete("/schedules/#{id}")
   end
 
   def write_schedules(schedules)

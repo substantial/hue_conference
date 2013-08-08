@@ -30,9 +30,15 @@ module HueConference
 
     def current_events
       if event_underway
-        [event_underway, next_starting_event]
-      else
+        if next_starting_event
+          [event_underway, next_starting_event]
+        else
+          [event_underway]
+        end
+      elsif next_starting_event
         [next_starting_event]
+      else
+        []
       end
     end
 

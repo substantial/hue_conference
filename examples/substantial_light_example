@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+
+require "hue_conference"
+
+config = JSON.parse(IO.read(File.join(File.dirname(__FILE__), "substantial_config.json")) )
+
+app = HueConference::Application.new(config)
+
+require 'pry'; binding.pry
+
+#loop do
+#  puts app.update_schedule
+#  puts app.schedule
+#
+#  sleep(60)
+#end
+
+#loop do
+#  colors = [Color::RGB::Red,
+#            Color::RGB::Blue,
+#            Color::RGB::SteelBlue,
+#            Color::RGB::Green,
+#            Color::RGB::Yellow,
+#            Color::RGB::Purple,
+#            Color::RGB::from_html("#c20000")
+#  ]
+#
+#  lightA.brightness!(1)
+#  lightB.brightness!(1)
+#
+#  lightA.update_state(color: colors.sample)
+#  lightB.update_state(color: colors.sample)
+#
+#  sleep(0.5)
+#end
+

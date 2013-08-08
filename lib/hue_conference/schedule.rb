@@ -7,7 +7,7 @@ class HueConference::Schedule
     @items = []
 
     room.calendar.event_callbacks.each do |callback|
-      @items << build_schedule_item(callback) unless time_is_in_past(callback.time)
+      @items << build_schedule_item(callback) #unless time_is_in_past(callback.time)
     end
   end
 
@@ -40,7 +40,7 @@ class HueConference::Schedule
   def build_schedule_item(callback)
     item = OpenStruct.new
 
-    item.timestamp = Digest::MD5.hexdigest("#{callback.time}#{callback.type}")[0..15]
+    item.timestamp = Digest::MD5.hexdigest("#{callback.type}#{callback.time}")[0..15]
     item.name = "#{@room.name}-#{item.timestamp}"
     item.light_id = @room.find_light(callback.light).id
     item.command = callback.command

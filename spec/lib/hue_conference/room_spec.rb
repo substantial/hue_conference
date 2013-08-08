@@ -30,8 +30,7 @@ describe "HueConference::Room" do
   describe "#has_upcoming_event?" do
 
     before do
-      HueConference::Calendar.stub(:new) { double }
-      room.stub(:event) { double }
+      room.stub(:calendar_events) { [double] }
     end
 
     it "should return true if there is an upcoming event" do
@@ -39,12 +38,12 @@ describe "HueConference::Room" do
     end
   end
 
-  describe "event" do
-    it "should return the calendar event to be scheduled" do
-      event = double('calendar event')
-      room.stub_chain(:calendar, :current_event) { event }
-      room.calendar.should_receive(:current_event)
-      room.event.should == event
+  describe "calendar_events" do
+    it "should return the event callbacks to be scheduled" do
+      callbacks = [double('event callback')]
+
+      room.stub(:calendar) { double(event_callbacks: callbacks) }
+      room.calendar_events.should == callbacks
     end
   end
 

@@ -15,17 +15,17 @@
           "location": "outdoor"
         }
       ]
+    },
+    {
+      "name": "POO Room",
+      "calendar_id": "dempsey@substantial.com",
+      "lights": [
+        {
+          "name": "POO Outdoor",
+          "location": "outdoor"
+        }
+      ]
     }
-//    {
-//      "name": "POO Room",
-//      "calendar_id": "dempsey@substantial.com",
-//      "lights": [
-//        {
-//          "name": "POO Outdoor",
-//          "location": "outdoor"
-//        }
-//      ]
-//    },
 //    {
 //      "name": "Box Room",
 //      "calendar_id": "substantial.com_2d38323037373730382d383535@resource.calendar.google.com",

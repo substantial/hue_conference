@@ -70,7 +70,7 @@ describe HueConference::Scheduler do
         end
 
         it "should create a schedule" do
-          HueConference::Schedule.should_receive(:new).with(room, current_schedule[room.name])
+          HueConference::Schedule.should_receive(:new).with(room)
           scheduler.schedule_rooms
         end
 

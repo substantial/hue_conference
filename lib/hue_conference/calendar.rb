@@ -4,8 +4,6 @@ module HueConference
   class Calendar
     require 'google/api_client'
 
-    attr_reader :id, :google_agent, :events
-
     def initialize(calendar_id, google_agent)
       @id = calendar_id
       @google_agent = google_agent

@@ -53,7 +53,7 @@ module HueConference
       {
         type: 'ending',
         light: 'outdoor',
-        time: @ending_time - 25,
+        time: @ending_time - 20,
         command: HueConference::Attribute.alert('lselect')
       }
     end

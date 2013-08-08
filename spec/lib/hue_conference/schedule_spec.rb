@@ -12,51 +12,37 @@ describe HueConference::Schedule do
         command: { 'on' => true }
       })
     }
-    let(:event) { double(callbacks: [callback]) }
+    let(:calendar) { double(event_callbacks: [callback]) }
     let(:light) { double(id: 1) }
     let(:room_name) { 'testroom' }
-    let(:room) { double(event: event, name: room_name, find_light: light) }
+    let(:room) { double(calendar: calendar, name: room_name, find_light: light) }
 
-    let(:schedule) { HueConference::Schedule.new(room, current_schedule) }
+    let(:schedule) { HueConference::Schedule.new(room) }
 
     it "should require a room" do
       expect { HueConference::Schedule.new }.to raise_error ArgumentError
     end
 
-    it "should require a current_schedule" do
-      expect { HueConference::Schedule.new(room) }.to raise_error ArgumentError
-    end
-
-    it "should have a current schedule" do
-      schedule.current_schedule.should == current_schedule
-    end
-
-    it "should have a room" do
-      schedule.room.should == room
-    end
-
-    it "should have a new schedule array" do
-      schedule.new_schedule.should == []
-    end
-
-    it "should have an old schedule array" do
-      schedule.old_schedule.should == []
+    it "should set the room instance variable" do
+      schedule.instance_variable_get(:@room).should == room
     end
 
     it "should build an array of schedule items from callbacks" do
+      timestamp = Digest::MD5.hexdigest("#{callback.type}#{callback.time}")[0..15]
+
       item = OpenStruct.new(
-        timestamp: '1010101000',
-        name: 'testroom-1010101000',
+        timestamp: timestamp,
+        name: "testroom-#{timestamp}",
         light_id: 1,
         command: { 'on' => true },
         time: '2010-10-10T10:10:00-07:00'
       )
 
-      schedule.items.should == [item]
+      schedule.instance_variable_get(:@items).should == [item]
     end
   end
 
-  describe "#build" do
+  describe "#sync_with_current_schedule" do
 
     context "when there is a current schedule for the room" do
 
@@ -69,24 +55,20 @@ describe HueConference::Schedule do
         let(:current_schedule) { [current_scheduled_event] }
         let(:room) { double.as_null_object }
 
-        let(:schedule) { HueConference::Schedule.new(room, current_schedule) }
+        let(:schedule) { HueConference::Schedule.new(room) }
 
         before do
           schedule.instance_variable_set(:@items, [item])
         end
 
-        it "should not create a new schedule" do
-          schedule.build
+        it "should set a new schedule array" do
+          schedule.sync_with_current_schedule(current_schedule)
           schedule.new_schedule.should == []
         end
 
-        it "should remove the schedule from the current_schedule queue" do
-          schedule.build
-          schedule.current_schedule.should == []
-        end
-
-        it "should return the schedule" do
-          schedule.build.should == schedule
+        it "should have an old schedule array" do
+          schedule.sync_with_current_schedule(current_schedule)
+          schedule.old_schedule.should == []
         end
       end
 
@@ -99,19 +81,19 @@ describe HueConference::Schedule do
         let(:current_schedule) { [current_scheduled_event] }
         let(:room) { double.as_null_object }
 
-        let(:schedule) { HueConference::Schedule.new(room, current_schedule) }
+        let(:schedule) { HueConference::Schedule.new(room) }
 
         before do
           schedule.instance_variable_set(:@items, [item])
         end
 
         it "should create a new schedule" do
-          schedule.build
+          schedule.sync_with_current_schedule(current_schedule)
           schedule.new_schedule.should == new_schedule
         end
 
         it "should add the scheduled event to the old schedule array" do
-          schedule.build
+          schedule.sync_with_current_schedule(current_schedule)
           schedule.old_schedule.should == old_schedule
         end
       end
@@ -125,21 +107,21 @@ describe HueConference::Schedule do
       let(:current_schedule) { [] }
       let(:room) { double.as_null_object }
 
-      let(:schedule) { HueConference::Schedule.new(room, current_schedule) }
+      let(:schedule) { HueConference::Schedule.new(room) }
 
       before do
         schedule.instance_variable_set(:@items, [item])
       end
 
       it "should create a new schedule" do
-        schedule.build
+        schedule.sync_with_current_schedule(current_schedule)
         schedule.new_schedule.should == new_schedule
       end
     end
   end
 
   describe "#has_new_items?" do
-    let(:schedule) { HueConference::Schedule.new(double.as_null_object, double) }
+    let(:schedule) { HueConference::Schedule.new(double.as_null_object) }
 
     context "when there are new schedules" do
       before do
@@ -163,7 +145,7 @@ describe HueConference::Schedule do
   end
 
   describe "#has_old_items?" do
-    let(:schedule) { HueConference::Schedule.new(double.as_null_object, double) }
+    let(:schedule) { HueConference::Schedule.new(double.as_null_object) }
 
     context "when there are new schedules" do
       before do

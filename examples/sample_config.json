@@ -1,0 +1,41 @@
+{
+  "google_config": {
+    "application_name": "HueCon",
+    "key_location": "client.p12",
+    "google_service_email": "444643631838-fv16bph1k6sudkvhkjkti702k5pcd925@developer.gserviceaccount.com"
+  },
+  "hue_account_name": "substantial",
+  "rooms": [
+    {
+      "name": "Turf Room",
+      "calendar_id": "substantial.com_il6c8bmfic8js0vgje0jnjjp7k@group.calendar.google.com",
+      "lights": [
+        {
+          "name": "Turf Outdoor",
+          "location": "outdoor"
+        }
+      ]
+    }
+    //{
+    //  "name": "POO Room",
+    //  "calendar_id": "substantial.com_il6c8bmfic8js0vgje0jnjjp7k@group.calendar.google.com",
+    //  "lights": [
+    //    {
+    //      "name": "Turf Indoor",
+    //      "location": "indoor"
+    //    }
+    //  ]
+    //}
+    //{
+    //  "name": "Box Room",
+    //  "calendar_id": "substantial.com_il6c8bmfic8js0vgje0jnjjp7k@group.calendar.google.com",
+    //  "lights": [
+    //    {
+    //      "name": "Turf Indoor",
+    //      "location": "indoor"
+    //    }
+    //  ]
+    //}
+  ]
+}
+

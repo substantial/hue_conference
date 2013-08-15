@@ -26,8 +26,6 @@ module HueConference
 
       light_manifest = HueConference::LightManifest.new(@client)
 
-      rooms_config = config['rooms']
-
       @rooms = HueConference::RoomBuilder.new(config['rooms'], light_manifest, google_agent).build
     end
 

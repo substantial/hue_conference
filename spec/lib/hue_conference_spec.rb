@@ -48,7 +48,7 @@ describe "HueConference::Application" do
       app = HueConference::Application.new(config_hash)
     end
 
-    it "should have a Ruhue client" do
+    it "should assign a hue client" do
       app = HueConference::Application.new(config_hash)
       app.client.should == hue_client
     end
@@ -64,7 +64,7 @@ describe "HueConference::Application" do
       app = HueConference::Application.new(config_hash)
     end
 
-    it "should have rooms" do
+    it "should assign a rooms collection" do
       app = HueConference::Application.new(config_hash)
       app.rooms.should == rooms
     end

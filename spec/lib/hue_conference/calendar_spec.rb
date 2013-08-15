@@ -1,25 +1,38 @@
 require 'spec_helper'
 
 describe 'HueConference::Calendar' do
-  let(:events_response) { double(items: [ double.as_null_object ]) }
-  let(:google_agent) { double(calendar_events: events_response) }
-  let(:current_event) { double(started?: true) }
-  let(:future_event) { double(started?: false) }
-  let(:events) { [current_event, future_event] }
+
   let(:calendar_id) { 'calendar_id' }
-  let(:calendar) { HueConference::Calendar.new(calendar_id, google_agent) }
+  let(:google_agent) { double }
 
   describe "#initialize" do
-    it "should set a calendar id instance variable" do
+    let(:calendar) { HueConference::Calendar.new(calendar_id, google_agent) }
+
+    it "should require a calendar_id" do
+      expect{ HueConference::Calendar.new }.to raise_error ArgumentError
+    end
+
+    it "should require a calendar_id and google_agent" do
+      expect{ HueConference::Calendar.new(calendar_id) }.to raise_error ArgumentError
+    end
+
+    it "should assign an id instance variable" do
       calendar.instance_variable_get(:@id).should == calendar_id
     end
 
-    it "should set a google agent instance variable" do
+    it "should assign a google agent instance variable" do
       calendar.instance_variable_get(:@google_agent).should == google_agent
+    end
+
+    it "should assign an events collection" do
+      calendar.instance_variable_get(:@events).should == []
     end
   end
 
   describe "sync_events!" do
+    let(:events_response) { double(items: [double]) }
+    let(:google_agent) { double(calendar_events: events_response) }
+    let(:calendar) { HueConference::Calendar.new(calendar_id, google_agent) }
 
     before do
       calendar.stub(:build_events)
@@ -30,23 +43,37 @@ describe 'HueConference::Calendar' do
       calendar.sync_events!
     end
 
-    it "should build the events with the response" do
-      calendar.should_receive(:build_events).with(events_response)
-      calendar.sync_events!
+    describe "when there are events" do
+      it "should build the events with the response" do
+        calendar.should_receive(:build_events).with(events_response)
+        calendar.sync_events!
+      end
+    end
+
+    describe "when there no events" do
+      before do
+        google_agent.stub_chain(:calendar_events, :items) { [] }
+      end
+
+      it "should not build any events" do
+        calendar.should_not receive(:build_events).with(events_response)
+        calendar.sync_events!
+      end
     end
   end
 
   describe "#build_events" do
-    let(:events_hash) { double(items: ['foo']) }
+
+    let(:events_response) { double(items: ['foo']) }
     let(:calendar) { HueConference::Calendar.new(calendar_id, google_agent) }
 
     before do
-      HueConference::Event.stub(:new) { 'foo' }
+      HueConference::Event.stub(:new)
     end
 
     it "should build events given Google API Response" do
       HueConference::Event.should_receive(:new).with('foo')
-      calendar.build_events(events_hash)
+      calendar.build_events(events_response)
     end
 
     it "should clear existing events" do
@@ -56,32 +83,35 @@ describe 'HueConference::Calendar' do
     end
   end
 
-  describe "#current_event" do
-    let(:unstarted) { double('unstarted', underway?: false, unstarted?: true) }
-    let(:underway) { double('underway', underway?: true, unstarted: false) }
-    let(:finished) { double('finished', underway?: false, unstarted?: false) }
-    let(:events) { [finished, underway, unstarted] }
-
+  describe "#current_events" do
+    let(:event_one) { double }
+    let(:event_two) { double }
+    let(:event_three) { double }
     let(:calendar) { HueConference::Calendar.new(calendar_id, google_agent) }
 
-    context "when an event is underway" do
-      before do
-        calendar.instance_variable_set(:@events, events)
-      end
-
-      it "should return the event" do
-        #calendar.current_event.should == underway
+    context "when there is one event" do
+      it "should only return that event" do
+        calendar.instance_variable_set(:@events, [event_one])
+        calendar.current_events.should == [event_one]
       end
     end
 
-    context "when no event is underway" do
-      before do
-        calendar.instance_variable_set(:@events, [finished, unstarted])
+    context "when there are more than two events" do
+      it "should only return the first two events" do
+        calendar.instance_variable_set(:@events, [event_one, event_two, event_three])
+        calendar.current_events.should == [event_one, event_two]
       end
+    end
+  end
 
-      it "should return the next unstarted event" do
-        #calendar.current_event.should == unstarted
-      end
+  describe "#event_callbacks" do
+    let(:callback) { double }
+    let(:event) { double(callbacks: [callback]) }
+    let(:calendar) { HueConference::Calendar.new(calendar_id, google_agent) }
+
+    it "should return a collection of current event callbacks" do
+      calendar.instance_variable_set(:@events, [event])
+      calendar.event_callbacks.should == [callback]
     end
   end
 end

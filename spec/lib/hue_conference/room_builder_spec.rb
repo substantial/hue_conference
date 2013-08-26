@@ -38,7 +38,6 @@ describe "HueConference::RoomBuilder" do
   end
 
   describe "#build" do
-
     let(:room) { double.as_null_object }
     let(:calendar) { double }
     let(:schedule) { double }

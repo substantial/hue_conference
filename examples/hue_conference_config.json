@@ -2,7 +2,7 @@
   "google_config": {
     "application_name": "Google Project Name",
     "key_location": "client.p12",
-    "google_service_email": "google_service_account_email@developer.gserviceaccount.com",
+    "google_service_email": "google_service_account_email@developer.gserviceaccount.com"
   },
   "hue_account_name": "Hue Account Name",
   "rooms": [

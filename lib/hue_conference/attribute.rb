@@ -8,6 +8,18 @@ module HueConference
     MAX_SATURATION = 255
     MAX_HUE = 65536
 
+    def self.available
+      self.multiple(on: true, hue: 21845, saturation: 1, brightness: 0.5)
+    end
+
+    def self.occupied
+      self.multiple(on: true, hue: 0, saturation: 1, brightness: 0.5)
+    end
+
+    def self.ending
+      alert('lselect')
+    end
+
     def self.on(new_state)
       { on: new_state }
     end

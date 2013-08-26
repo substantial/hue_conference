@@ -1,28 +1,28 @@
 require 'spec_helper'
 
 describe HueConference::LightManifest do
+  let(:ruhue_client) { Ruhue::Client.new(double, 'foousername') }
 
   describe "#initialize" do
-    it "should take a Ruhue Client" do
-      hue = double
-      ruhue_client = Ruhue::Client.new(hue, "foousername")
-      manifest = HueConference::LightManifest.new(ruhue_client)
-      manifest.client.should be_a Ruhue::Client
+
+    it "should require a ruhue client" do
+      expect { HueConference::LightManifest.new }.to raise_error ArgumentError
     end
 
-    it "should have a collection of lights" do
-      hue = double
-      ruhue_client = Ruhue::Client.new(hue, "foousername")
+    it "should assign a Ruhue Client" do
       manifest = HueConference::LightManifest.new(ruhue_client)
-      manifest.stub(:build_manifest)
-      manifest.lights.should be_a Array
+      manifest.client.should be_a Ruhue::Client
+      manifest.client.should == ruhue_client
+    end
+
+    it "should assign a lights collection" do
+      manifest = HueConference::LightManifest.new(ruhue_client)
+      manifest.instance_variable_get(:@lights).should == []
     end
   end
 
   describe "#build_manifest" do
     let(:light) { double.as_null_object }
-    let(:hue) { double }
-    let(:ruhue_client) { Ruhue::Client.new(hue, "foousername") }
     let(:manifest) { HueConference::LightManifest.new(ruhue_client) }
     let(:response_data) {
       {
@@ -30,11 +30,11 @@ describe HueConference::LightManifest do
         "2" => { "name" => "Kitchen" }
       }
     }
+    let(:response) { double }
 
     before do
-      @response = double
-      @response.stub(:data).and_return(response_data)
-      ruhue_client.stub(:get) { @response }
+      response.stub(:data).and_return(response_data)
+      ruhue_client.stub(:get) { response }
       HueConference::Light.stub(:new) { light }
     end
 

@@ -45,7 +45,7 @@ module HueConference
         type: 'starting',
         light:'outdoor',
         time: @starting_time,
-        command: HueConference::Attribute.multiple(on: true, color: Color::RGB::Tomato)
+        command: HueConference::Attribute.occupied
       }
     end
 
@@ -54,7 +54,7 @@ module HueConference
         type: 'ending',
         light: 'outdoor',
         time: @ending_time - 20,
-        command: HueConference::Attribute.alert('lselect')
+        command: HueConference::Attribute.ending
       }
     end
 
@@ -63,7 +63,7 @@ module HueConference
         type: 'ending',
         light: 'outdoor',
         time: @ending_time - 5,
-        command: HueConference::Attribute.color(Color::RGB::Green)
+        command: HueConference::Attribute.available
       }
     end
   end

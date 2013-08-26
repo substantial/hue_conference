@@ -13,9 +13,9 @@ module HueConference
     def sync_events!
       google_events_response = @google_agent.calendar_events(@id)
 
-      return false if google_events_response.items.nil?
+      return false if google_events_response.nil?
 
-      build_events(google_events_response)
+      build_events(google_events_response) unless google_events_response.items.empty?
     end
 
     def build_events(google_events_response)
@@ -23,16 +23,10 @@ module HueConference
       google_events_response.items.each do |event_hash|
         @events << HueConference::Event.new(event_hash)
       end
-      return true
     end
 
     def current_events
-      things = []
-      current_event = events.first
-      next_event = events[1]
-      things << current_event if current_event
-      things << next_event if next_event
-      things
+      @events[0..1]
     end
 
     def event_callbacks
@@ -44,13 +38,5 @@ module HueConference
     def find_event(type)
       @events.find { |event| event.send(type) }
     end
-
-#    def current_event
-#      find_event(:underway?)
-#    end
-#
-#    def next_event
-#      find_event(:unstarted?)
-#    end
   end
 end
